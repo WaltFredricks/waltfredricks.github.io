@@ -28,7 +28,7 @@
             writing-mode: vertical-rl;
             font-size: 14px;
             animation: fall linear infinite;
-            opacity: 0;
+            opacity: 0; /* Ensure invisibility before dropping */
         }
         .info-stream .real-info {
             color: #0dcaf0;
@@ -51,14 +51,14 @@
         @keyframes fall {
             0% {
                 top: -100%;
-                opacity: 0;
+                opacity: 0; /* Invisible initially */
             }
             15% {
-                opacity: 1;
+                opacity: 1; /* Fade in slightly after starting */
             }
             100% {
                 top: 100%;
-                opacity: 0;
+                opacity: 0; /* Fade out as it exits */
             }
         }
         .center-text {
@@ -68,6 +68,7 @@
             transform: translate(-50%, -50%);
             text-align: center;
             color: #00bfff;
+            text-shadow: 6px 6px 12px white; /* Much bolder white drop shadow */
         }
         .center-text img {
             width: 150px;
