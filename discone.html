@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Guide to Brazilian Pirate Radio: Discone DIY</title>
+            <meta name="description" content="A detailed guide to building a discone antenna array, connecting to SDRs, and even communicating with military satcoms.">
+                <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+                    <!-- Font Awesome for Icons -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVnVn1zFL7Gq+0wK50Yy2fB3uQAdzPjRS5ppI0q2rDRbG3qD06mgIvJtZV6A3JZ2ibg9QXo6l9+WhvYMg8+bMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+                    <!-- AOS CSS for Animations -->
+                    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+                        <style>
+                            /* Reset and Base Styles */
+                            * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                            }
+
+                            body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            background-color: #122A52; /* Deep blue background */
+                            color: #E0E8F9; /* Light text for contrast */
+                            line-height: 1.6;
+                            }
+
+                            a {
+                            color: #E0E8F9;
+                            text-decoration: none;
+                            transition: background-color 0.3s, color 0.3s;
+                            }
+
+                            a:focus,
+                            a:hover {
+                            background-color: #1A3568;
+                            color: #FFFFFF;
+                            outline: none;
+                            }
+
+                            /* Header */
+                            header {
+                            background-color: #1A3568; /* Darker blue for header */
+                            color: #E0E8F9;
+                            padding: 40px 0;
+                            text-align: center;
+                            border-bottom: 2px solid #0E203E;
+                            }
+
+                            header h1 {
+                            font-size: 3rem;
+                            margin-bottom: 10px;
+                            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                            }
+
+                            header p {
+                            font-size: 1.5rem;
+                            max-width: 800px;
+                            margin: 0 auto;
+                            }
+
+                            /* Navigation */
+                            nav {
+                            background-color: #0E203E; /* Even darker blue for navigation */
+                            display: flex;
+                            justify-content: center;
+                            flex-wrap: wrap;
+                            position: sticky;
+                            top: 0;
+                            z-index: 1000;
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                            }
+
+                            nav a {
+                            padding: 15px 20px;
+                            display: block;
+                            text-align: center;
+                            font-size: 1.1rem;
+                            transition: background-color 0.3s, color 0.3s;
+                            }
+
+                            nav a i {
+                            margin-right: 8px;
+                            }
+
+                            /* Container */
+                            .container {
+                            max-width: 1200px;
+                            margin: 40px auto;
+                            padding: 0 20px;
+                            }
+
+                            /* Sections */
+                            section {
+                            margin-bottom: 80px;
+                            padding: 20px;
+                            background-color: #16325A;
+                            border-radius: 8px;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                            }
+
+                            section h2 {
+                            font-size: 2.5rem;
+                            margin-bottom: 20px;
+                            border-bottom: 2px solid #E0E8F9;
+                            padding-bottom: 10px;
+                            display: inline-block;
+                            position: relative;
+                            }
+
+                            section h2::after {
+                            content: '';
+                            position: absolute;
+                            width: 50px;
+                            height: 4px;
+                            background-color: #E0E8F9;
+                            left: 0;
+                            bottom: -2px;
+                            }
+
+                            /* Tables */
+                            table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 15px;
+                            background-color: #1A3568; /* Table background */
+                            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                            }
+
+                            th,
+                            td {
+                            border: 1px solid #0E203E;
+                            padding: 15px 20px;
+                            text-align: left;
+                            }
+
+                            th {
+                            background-color: #0E203E;
+                            color: #E0E8F9;
+                            }
+
+                            tr:nth-child(even) {
+                            background-color: #16325A;
+                            }
+
+                            /* Code Blocks */
+                            pre {
+                            background-color: #1A3568;
+                            padding: 20px;
+                            overflow-x: auto;
+                            color: #E0E8F9;
+                            border-radius: 5px;
+                            font-family: 'Courier New', Courier, monospace;
+                            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+                            }
+
+                            /* Footer */
+                            footer {
+                            background-color: #0E203E;
+                            color: #E0E8F9;
+                            text-align: center;
+                            padding: 20px 0;
+                            position: relative;
+                            width: 100%;
+                            border-top: 2px solid #1A3568;
+                            }
+
+                            /* Back-to-Top Button */
+                            #back-to-top {
+                            position: fixed;
+                            bottom: 40px;
+                            right: 40px;
+                            background-color: #1A3568;
+                            color: #E0E8F9;
+                            border: none;
+                            padding: 15px;
+                            border-radius: 50%;
+                            font-size: 1.2rem;
+                            cursor: pointer;
+                            display: none;
+                            z-index: 1000;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+                            transition: background-color 0.3s, transform 0.3s;
+                            }
+
+                            #back-to-top:hover {
+                            background-color: #16325A;
+                            transform: scale(1.1);
+                            }
+
+                            /* Smooth Scrolling */
+                            html {
+                            scroll-behavior: smooth;
+                            }
+                        </style>
+                    </head>
+
+                    <body>
+                    <header data-aos="fade-down">
+                        <h1>Guide to Brazilian Pirate Radio: Discone DIY</h1>
+                        <p>Build a discone antenna array and explore advanced communication, including SDR and military satcom.</p>
+                    </header>
+
+                    <nav aria-label="Main Navigation">
+                        <a href="#materials" data-aos="fade-down" data-aos-delay="100"><i class="fas fa-cogs"></i> Materials</a>
+                        <a href="#assembly" data-aos="fade-down" data-aos-delay="200"><i class="fas fa-tools"></i> Assembly Guide</a>
+                        <a href="#connecting" data-aos="fade-down" data-aos-delay="300"><i class="fas fa-link"></i> Connecting to SDR</a>
+                        <a href="#military" data-aos="fade-down" data-aos-delay="400"><i class="fas fa-shield-alt"></i> Military Satcom</a>
+                        <a href="#shortwave" data-aos="fade-down" data-aos-delay="500"><i class="fas fa-wifi"></i> Shortwave</a>
+                        <a href="#naval" data-aos="fade-down" data-aos-delay="600"><i class="fas fa-ship"></i> Naval Communication</a>
+                        <a href="#components" data-aos="fade-down" data-aos-delay="700"><i class="fas fa-microchip"></i> Components</a>
+                        <a href="#bom" data-aos="fade-down" data-aos-delay="800"><i class="fas fa-list-alt"></i> BOM</a>
+                        <a href="#troubleshooting" data-aos="fade-down" data-aos-delay="900"><i class="fas fa-tools"></i> Troubleshooting</a>
+                        <a href="#faqs" data-aos="fade-down" data-aos-delay="1000"><i class="fas fa-question-circle"></i> FAQs</a>
+                        <a href="#bands" data-aos="fade-down" data-aos-delay="1100"><i class="fas fa-signal"></i> Knowing Your Bands</a>
+                    </nav>
+
+                    <main class="container">
+                        <!-- Materials Section -->
+                        <section id="materials" data-aos="fade-up">
+                            <h2>Materials</h2>
+                            <p>Gather all the necessary materials before starting your discone antenna project.</p>
+                            <ul>
+                                <li>Aluminum tubing (various diameters)</li>
+                                <li>Coaxial cable (RG-58 or similar)</li>
+                                <li>Soldering kit</li>
+                                <li>Metal brackets and screws</li>
+                                <li>Connector fittings (SMA or N-type)</li>
+                                <li>Measuring tape and ruler</li>
+                                <li>Protective gloves and eyewear</li>
+                                <li>Base mounting kit</li>
+                            </ul>
+                            </section>
+
+                            <!-- Assembly Guide Section -->
+                            <section id="assembly" data-aos="fade-up" data-aos-delay="100">
+                                <h2>Assembly Guide</h2>
+                                <p>Follow these steps to assemble your discone antenna:</p>
+                                <ol>
+                                    <li><strong>Prepare the Components:</strong> Cut the aluminum tubing to the required lengths based on your design specifications.</li>
+                                    <li><strong>Construct the Cone:</strong> Assemble the cone by connecting the vertical and horizontal elements using metal brackets.</li>
+                                    <li><strong>Attach the Disc:</strong> Secure the disc at the top of the cone, ensuring it is centered and stable.</li>
+                                    <li><strong>Install the Feed Point:</strong> Connect the coaxial cable to the feed point, soldering carefully for a secure connection.</li>
+                                    <li><strong>Mount the Antenna:</strong> Attach the antenna to the base mounting kit and ensure it is firmly secured.</li>
+                                    <li><strong>Test the Assembly:</strong> Use a multimeter to check all connections and ensure there are no shorts.</li>
+                                </ol>
+                                </section>
+
+                                <!-- Connecting to SDR Section -->
+                                <section id="connecting" data-aos="fade-up" data-aos-delay="200">
+                                    <h2>Connecting to SDR</h2>
+                                    <p>Integrate your discone antenna with a Software Defined Radio (SDR) for enhanced signal processing.</p>
+                                    <pre><code>
+                                            // Step 1: Connect the coaxial cable from the discone antenna to the SDR device's antenna input.
+
+                                            // Step 2: Install SDR software on your computer (e.g., SDR#, GNU Radio).
+
+                                            // Step 3: Launch the SDR software and select your SDR device from the input options.
+
+                                            // Step 4: Configure the frequency range to match your desired spectrum (e.g., 25 MHz to 1 GHz).
+
+                                            // Step 5: Begin scanning and adjusting settings for optimal signal reception.
+                                            </code></pre>
+                                    </section>
+
+                                    <!-- Military Satcom Section -->
+                                    <section id="military" data-aos="fade-up" data-aos-delay="300">
+                                        <h2>Military Satcom</h2>
+                                        <p>Communicating with military satellite communications requires specialized equipment and knowledge.</p>
+                                        <p><strong>Disclaimer:</strong> Unauthorized access to military communications is illegal and unethical. This section is for educational purposes only.</p>
+                                        <ul>
+                                            <li>High-gain directional antennas</li>
+                                            <li>Encrypted communication protocols</li>
+                                            <li>Advanced SDR capabilities</li>
+                                            <li>Knowledge of military frequency bands</li>
+                                        </ul>
+                                        </section>
+
+                                        <!-- Shortwave Section -->
+                                        <section id="shortwave" data-aos="fade-up" data-aos-delay="400">
+                                            <h2>Shortwave</h2>
+                                            <p>Shortwave radio allows for long-distance communication by reflecting signals off the ionosphere.</p>
+                                            <ul>
+                                                <li>Optimal frequencies: 3 MHz to 30 MHz</li>
+                                                <li>Timing and atmospheric conditions affect signal quality</li>
+                                                <li>Use bandpass filters to isolate desired signals</li>
+                                            </ul>
+                                            </section>
+
+                                            <!-- Naval Communication Section -->
+                                            <section id="naval" data-aos="fade-up" data-aos-delay="500">
+                                                <h2>Naval Communication</h2>
+                                                <p>Naval communication systems are robust and designed for reliability over vast oceanic distances.</p>
+                                                <ul>
+                                                    <li>VHF and HF bands are commonly used</li>
+                                                    <li>Digital modes for secure and efficient communication</li>
+                                                    <li>Integration with GPS and other navigation systems</li>
+                                                </ul>
+                                                </section>
+
+                                                <!-- Components Section -->
+                                                <section id="components" data-aos="fade-up" data-aos-delay="600">
+                                                    <h2>Components</h2>
+                                                    <p>Key components required for building and operating your discone antenna system.</p>
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Component</th>
+                                                                <th>Description</th>
+                                                                <th>Quantity</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Aluminum Tubing</td>
+                                                                <td>Structural elements for the antenna</td>
+                                                                <td>4 meters</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Coaxial Cable</td>
+                                                                <td>Connects antenna to SDR</td>
+                                                                <td>10 meters</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Soldering Kit</td>
+                                                                <td>For secure electrical connections</td>
+                                                                <td>1 set</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Connectors</td>
+                                                                <td>SMA or N-type for cable connections</td>
+                                                                <td>4 pieces</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Mounting Hardware</td>
+                                                                <td>Brackets, screws, and bolts</td>
+                                                                <td>As needed</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </section>
+
+                                                <!-- BOM Section -->
+                                                <section id="bom" data-aos="fade-up" data-aos-delay="700">
+                                                    <h2>Bill of Materials (BOM)</h2>
+                                                    <p>Detailed list of all materials and their estimated costs.</p>
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Item</th>
+                                                                <th>Specification</th>
+                                                                <th>Cost (USD)</th>
+                                                                <th>Supplier</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>Aluminum Tubing</td>
+                                                                <td>1-inch diameter, 4 meters</td>
+                                                                <td>$40</td>
+                                                                <td>Home Depot</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Coaxial Cable</td>
+                                                                <td>RG-58, 10 meters</td>
+                                                                <td>$25</td>
+                                                                <td>Amazon</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Soldering Kit</td>
+                                                                <td>Includes iron, solder, and accessories</td>
+                                                                <td>$35</td>
+                                                                <td>eBay</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Connectors</td>
+                                                                <td>SMA (4-pack)</td>
+                                                                <td>$20</td>
+                                                                <td>AliExpress</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Mounting Hardware</td>
+                                                                <td>Brackets and screws</td>
+                                                                <td>$15</td>
+                                                                <td>Local Hardware Store</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Base Mounting Kit</td>
+                                                                <td>Adjustable tripod stand</td>
+                                                                <td>$50</td>
+                                                                <td>Best Buy</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>Total</td>
+                                                                <td></td>
+                                                                <td><strong>$185</strong></td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </section>
+
+                                                <!-- Knowing Your Bands Section -->
+                                                <section id="bands" data-aos="fade-up" data-aos-delay="1100">
+                                                    <h2>Knowing Your Bands</h2>
+                                                    <p>Understanding the frequency bands you intend to explore is crucial for effective communication and signal reception. Below is a list of common frequency bands related to various applications such as aviation, maritime, satellite communications, public safety, and everyday devices like cell phones.</p>
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Category</th>
+                                                                <th>Frequency Range</th>
+                                                                <th>Description</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><strong>Airplanes</strong></td>
+                                                                <td>118.000 – 136.975 MHz (VHF Airband)</td>
+                                                                <td>Used for air traffic control and communication between pilots and ground stations.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Satellite Uplink</strong></td>
+                                                                <td>1.6 GHz – 2.4 GHz</td>
+                                                                <td>Frequencies used to transmit signals from ground stations to satellites.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Satellite Downlink</strong></td>
+                                                                <td>2.3 GHz – 2.5 GHz</td>
+                                                                <td>Frequencies used to receive signals transmitted from satellites to ground stations.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Boats</strong></td>
+                                                                <td>156.000 – 162.025 MHz (VHF Marine Band)</td>
+                                                                <td>Used for ship-to-ship and ship-to-shore communications, including distress signals.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>TETRA</strong></td>
+                                                                <td>380 MHz – 400 MHz</td>
+                                                                <td>Used for professional mobile radio systems, primarily by public safety organizations.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Motorola Two-Way Radios</strong></td>
+                                                                <td>150 MHz – 174 MHz (VHF) & 450 MHz – 470 MHz (UHF)</td>
+                                                                <td>Commonly used for short-range communication in various industries and services.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Cell Phones</strong></td>
+                                                                <td>700 MHz, 850 MHz, 1800 MHz, 1900 MHz, 2100 MHz</td>
+                                                                <td>Used for mobile voice and data communications across different generations of cellular technology.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Wi-Fi</strong></td>
+                                                                <td>2.4 GHz & 5 GHz</td>
+                                                                <td>Used for wireless networking and internet access in homes, businesses, and public spaces.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Public Safety (Police, Fire)</strong></td>
+                                                                <td>450 MHz – 470 MHz (UHF)</td>
+                                                                <td>Used for emergency communications and coordination among first responders.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Amateur Radio (Ham)</strong></td>
+                                                                <td>3.5 MHz – 30 MHz (HF); 50 MHz – 54 MHz (6m Band); 144 MHz – 148 MHz (2m Band); 430 MHz – 450 MHz (70cm Band)</td>
+                                                                <td>Used by hobbyists for personal communication, experimentation, and emergency communications.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Emergency Services</strong></td>
+                                                                <td>406 MHz – 420 MHz</td>
+                                                                <td>Used for emergency beacons and communication devices in distress situations.</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>Marine SSB</strong></td>
+                                                                <td>3.7 MHz – 4.0 MHz (Shortwave Single Side Band)</td>
+                                                                <td>Used for long-distance marine communications, especially by commercial and research vessels.</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                        <p>**Note:** Always ensure that you have the proper licenses and permissions before transmitting on any of these frequency bands. Unauthorized transmissions can lead to legal consequences.</p>
+                                                    </section>
+
+                                                    <!-- Troubleshooting Section -->
+                                                    <section id="troubleshooting" data-aos="fade-up" data-aos-delay="800">
+                                                        <h2>Troubleshooting</h2>
+                                                        <p>Common issues and their solutions when building and operating your discone antenna.</p>
+                                                        <ul>
+                                                            <li><strong>No Signal Reception:</strong> Check all connections and ensure the antenna is properly mounted.</li>
+                                                            <li><strong>Interference:</strong> Use shielded cables and avoid running cables near power lines.</li>
+                                                            <li><strong>Weak Signal:</strong> Verify the antenna alignment and consider using a higher-gain SDR.</li>
+                                                            <li><strong>Physical Damage:</strong> Inspect the antenna for bends or breaks and repair as necessary.</li>
+                                                        </ul>
+                                                        </section>
+
+                                                        <!-- FAQs Section -->
+                                                        <section id="faqs" data-aos="fade-up" data-aos-delay="900">
+                                                            <h2>FAQs</h2>
+                                                            <div>
+                                                                <h3>1. What is a discone antenna?</h3>
+                                                                <p>A discone antenna is a type of wideband antenna known for its ability to receive a broad range of frequencies without the need for tuning.</p>
+                                                            </div>
+                                                            <div>
+                                                                <h3>2. Can I use any SDR with this antenna?</h3>
+                                                                <p>Most SDRs are compatible, but it's recommended to use one with a wide frequency range and good sensitivity for optimal performance.</p>
+                                                            </div>
+                                                            <div>
+                                                                <h3>3. Is it legal to communicate on military satcom frequencies?</h3>
+                                                                <p>No, accessing or transmitting on military satellite communication frequencies without authorization is illegal and can result in severe penalties.</p>
+                                                            </div>
+                                                            <div>
+                                                                <h3>4. How do I improve signal quality?</h3>
+                                                                <p>Ensure proper antenna alignment, minimize cable losses by using high-quality coaxial cables, and use filters to reduce interference.</p>
+                                                            </div>
+                                                            <div>
+                                                                <h3>5. What maintenance does the antenna require?</h3>
+                                                                <p>Regularly inspect the antenna for physical damage, clean connections to prevent corrosion, and ensure all mounting hardware remains secure.</p>
+                                                            </div>
+                                                        </section>
+                                                    </main>
+
+                                                    <footer>
+                                                        <p>&copy; 2024 Octal Security Inc. All rights reserved.</p>
+                                                    </footer>
+
+                                                    <!-- Back-to-Top Button -->
+                                                    <button id="back-to-top" aria-label="Back to Top">
+                                                        <i class="fas fa-arrow-up"></i>
+                                                    </button>
+
+                                                    <!-- AOS JS for Animations -->
+                                                    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+                                                    <script>
+                                                        AOS.init({
+                                                        duration: 800,
+                                                        easing: 'slide',
+                                                        once: true
+                                                        });
+
+                                                        // Back-to-Top Button Functionality
+                                                        const backToTopButton = document.getElementById('back-to-top');
+
+                                                        window.addEventListener('scroll', () => {
+                                                                if (window.pageYOffset > 300) {
+                                                                backToTopButton.style.display = 'block';
+                                                                } else {
+                                                                backToTopButton.style.display = 'none';
+                                                                }
+                                                                });
+
+                                                                backToTopButton.addEventListener('click', () => {
+                                                                window.scrollTo({
+                                                                top: 0,
+                                                                behavior: 'smooth'
+                                                                });
+                                                                });
+                                                            </script>
+                                                        </body>
+
+                                                    </html>
