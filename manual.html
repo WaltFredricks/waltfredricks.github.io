@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octal Security Employee Manual</title>
+    <!-- Google Fonts for Enhanced Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AOS Library for Scroll Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 1.5em;
+        }
+        /* Header Styles */
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 2.5em 0;
+            text-align: center;
+            position: relative;
+        }
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 0.5em;
+            animation: fadeInDown 1s ease-out;
+        }
+        header p {
+            font-size: 1.3em;
+            animation: fadeInUp 1s ease-out;
+        }
+        /* Navigation Styles */
+        nav {
+            background: #001f3f;
+            color: white;
+            padding: 1em 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav .nav-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        nav .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        nav .nav-links a {
+            color: white;
+            padding: 0.6em 1em;
+            margin: 0 0.3em;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        nav .nav-links a:hover {
+            background-color: #2c3e50;
+            color: #f0f4f8;
+        }
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+            margin-top: 0.5em;
+        }
+        .search-container input {
+            padding: 0.6em 2.5em 0.6em 1em;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            width: 250px;
+            max-width: 100%;
+        }
+        .search-container .fa-search {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #003366;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .search-container .fa-search:hover {
+            color: #2c3e50;
+        }
+        /* Section Styles */
+        section {
+            padding: 3em 5%;
+            border-bottom: 1px solid #ccc;
+            background-color: white;
+        }
+        section:nth-of-type(even) {
+            background-color: #e6f2ff;
+        }
+        section h2 {
+            color: #003366;
+            margin-bottom: 1em;
+            font-size: 2.2em;
+        }
+        /* Footer Styles */
+        footer {
+            text-align: center;
+            padding: 2.5em 0;
+            background: #001f3f;
+            color: white;
+        }
+        footer p {
+            margin: 0.5em 0;
+        }
+        footer a {
+            color: #00aaff;
+            margin: 0 0.5em;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #2c3e50;
+        }
+        /* Back to Top Button Styles */
+        #back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 0.8em 1em;
+            border-radius: 50%;
+            font-size: 1.2em;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        #back-to-top:hover {
+            background-color: #2c3e50;
+            transform: scale(1.1);
+        }
+        /* Feedback Form Styles */
+        .feedback-form {
+            padding: 2em;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            max-width: 700px;
+            margin: 2em auto;
+        }
+        .feedback-form h2 {
+            color: #003366;
+            margin-bottom: 1em;
+            font-size: 1.8em;
+        }
+        .feedback-form label {
+            display: block;
+            margin-bottom: 0.5em;
+            font-weight: bold;
+        }
+        .feedback-form textarea {
+            width: 100%;
+            padding: 0.8em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 120px;
+            font-size: 1em;
+            margin-bottom: 1em;
+        }
+        .feedback-form button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 0.8em 1.5em;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        .feedback-form button:hover {
+            background-color: #2c3e50;
+        }
+        .feedback-form .success-message {
+            color: #28a745;
+            margin-top: 1em;
+            font-weight: bold;
+        }
+        /* Search Highlight Styles */
+        .highlight {
+            background-color: #ffd700;
+            color: #003366;
+        }
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            nav .nav-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            nav .nav-links {
+                flex-direction: column;
+                width: 100%;
+            }
+            nav .nav-links a {
+                margin: 0.3em 0;
+                width: 100%;
+            }
+            .search-container {
+                width: 100%;
+                margin-top: 1em;
+            }
+            .search-container input {
+                width: 100%;
+            }
+            #back-to-top {
+                right: 15px;
+                bottom: 15px;
+            }
+        }
+        /* Animation Keyframes */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header id="top">
+        <h1 data-aos="fade-down">Octal Security Employee Manual</h1>
+        <p data-aos="fade-up">Your guide to policies, benefits, and more.</p>
+    </header>
+
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-links">
+                <a href="#mission">Mission & Values</a>
+                <a href="#continuing-education">Continuing Education</a>
+                <a href="#sop">Standard Operating Procedures</a>
+                <a href="#communications">Employee Communications</a>
+                <a href="#benefits">Benefits</a>
+                <a href="#performance">Performance Expectations</a>
+                <a href="#employment">Employment Relationship</a>
+                <a href="#security">Physical Security</a>
+                <a href="#technology">Technology Use</a>
+                <a href="#feedback">Feedback</a>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search..." aria-label="Search">
+                <i class="fas fa-search" id="search-icon"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Mission & Values Section -->
+        <section id="mission" data-aos="fade-up">
+            <h2>Mission & Values</h2>
+            <p>Octal Security: The bridge to your Operational Technical excellence.</p>
+            <ul>
+                <li><strong>Excellence:</strong> Commitment to delivering high-quality cybersecurity solutions.</li>
+                <li><strong>Integrity:</strong> Upholding the highest ethical standards.</li>
+                <li><strong>Collaboration:</strong> Building strong partnerships to address cyber threats.</li>
+                <li><strong>Adaptability:</strong> Staying agile and responsive to evolving challenges.</li>
+                <li><strong>Customer Focus:</strong> Prioritizing client needs and satisfaction.</li>
+                <li><strong>National Security:</strong> Protecting critical infrastructure and sensitive information.</li>
+            </ul>
+        </section>
+
+        <!-- Continuing Education Section -->
+        <section id="continuing-education" data-aos="fade-up">
+            <h2>Continuing Education</h2>
+            <p>Octal Security supports employees in their professional growth through ongoing education and training opportunities.</p>
+        </section>
+
+        <!-- Standard Operating Procedures Section -->
+        <section id="sop" data-aos="fade-up">
+            <h2>Standard Operating Procedures</h2>
+            <p>We encourage employees to develop and follow clear, effective SOPs for consistency and efficiency.</p>
+        </section>
+
+        <!-- Employee Communications Section -->
+        <section id="communications" data-aos="fade-up">
+            <h2>Employee Communications</h2>
+            <p>Open-door policy, anonymous feedback channels, and regular surveys to promote dialogue and innovation.</p>
+        </section>
+
+        <!-- Benefits Section -->
+        <section id="benefits" data-aos="fade-up">
+            <h2>Employee Benefits</h2>
+            <ul>
+                <li>Employee Assistance Program (EAP)</li>
+                <li>Health and Safety Guidelines</li>
+                <li>Retirement and Savings Plans</li>
+                <li>Paid Time Off and Vacation Policy</li>
+            </ul>
+        </section>
+
+        <!-- Performance Expectations Section -->
+        <section id="performance" data-aos="fade-up">
+            <h2>Performance Expectations</h2>
+            <p>Frameworks for attendance, punctuality, and performance evaluations ensure fairness and transparency.</p>
+        </section>
+
+        <!-- Employment Relationship Section -->
+        <section id="employment" data-aos="fade-up">
+            <h2>Employment Relationship</h2>
+            <ul>
+                <li>At-will employment</li>
+                <li>Conflict of interest policy</li>
+                <li>Non-compete and non-disclosure agreements</li>
+                <li>Equal Employment Opportunity</li>
+            </ul>
+        </section>
+
+        <!-- Physical Security Section -->
+        <section id="security" data-aos="fade-up">
+            <h2>Physical Security</h2>
+            <p>Strict access controls for data centers and visitor policies to safeguard critical infrastructure.</p>
+        </section>
+
+        <!-- Technology Use Section -->
+        <section id="technology" data-aos="fade-up">
+            <h2>Technology Use</h2>
+            <p>Guidelines for responsible use of company resources, including BYOD, data classification, and acceptable use policies.</p>
+        </section>
+
+        <!-- Feedback Section -->
+        <section id="feedback" data-aos="fade-up">
+            <div class="feedback-form">
+                <h2>Feedback</h2>
+                <form id="feedbackForm">
+                    <label for="comments">Your Comments:</label>
+                    <textarea id="comments" name="comments" rows="4" required></textarea>
+                    <button type="submit">Submit</button>
+                    <p class="success-message" id="successMessage" style="display: none;">Thank you for your feedback!</p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" aria-label="Back to Top"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; 2024 Octal Security Inc. All rights reserved.</p>
+        <p>Version 1.2 | Last Updated: December 28, 2024</p>
+        <p>
+            <a href="#">Privacy Policy</a> |
+            <a href="#">Terms of Service</a>
+        </p>
+    </footer>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <!-- Main JavaScript -->
+    <script>
+        // Initialize AOS (Animate On Scroll)
+        AOS.init({
+            duration: 1000,
+            once: true,
+        });
+
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if(targetSection) {
+                    window.scrollTo({
+                        top: targetSection.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Back to Top Button Functionality
+        const backToTopButton = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Feedback Form Submission
+        const feedbackForm = document.getElementById('feedbackForm');
+        const successMessage = document.getElementById('successMessage');
+
+        feedbackForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Simulate form submission
+            const comments = document.getElementById('comments').value;
+            if(comments.trim() !== "") {
+                // Here you can add code to handle the feedback, e.g., save to localStorage or send to an API
+                successMessage.style.display = 'block';
+                feedbackForm.reset();
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // Search Functionality
+        const searchInput = document.getElementById('search-input');
+        const searchIcon = document.getElementById('search-icon');
+
+        function highlightSearch(query) {
+            // Remove previous highlights
+            document.querySelectorAll('.highlight').forEach(el => {
+                el.classList.remove('highlight');
+            });
+
+            if(query) {
+                const regex = new RegExp(`(${query})`, 'gi');
+                document.querySelectorAll('section').forEach(section => {
+                    // Temporarily store the original HTML
+                    let originalHTML = section.innerHTML;
+                    // Replace matches with highlighted span
+                    section.innerHTML = originalHTML.replace(regex, '<span class="highlight">$1</span>');
+                });
+            }
+        }
+
+        searchIcon.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            highlightSearch(query);
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const query = searchInput.value.trim();
+                highlightSearch(query);
+            }
+        });
+
+        // Click outside to remove highlights
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.search-container')) {
+                document.querySelectorAll('.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
