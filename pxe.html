@@ -147,6 +147,7 @@
             <a href="#step-3"><i class="fas fa-rocket"></i> Configure Auto-start</a>
             <a href="#step-4"><i class="fas fa-network-wired"></i> Configure PXE Boot</a>
             <a href="#step-5"><i class="fas fa-integration"></i> Integrate VM</a>
+            <a href="#extra-credit"><i class="fas fa-award"></i> Extra Credit</a>
             <a href="#pxe-servers"><i class="fas fa-network-alt"></i> PXE Server Options</a>
             <a href="#troubleshooting"><i class="fas fa-tools"></i> Troubleshooting</a>
             <a href="#conclusion"><i class="fas fa-check-circle"></i> Conclusion</a>
@@ -418,6 +419,183 @@ sudo systemctl restart dnsmasq
     
     <p>
         By following these steps, you can effectively integrate your customized TinyCore Linux VM into your PXE boot setup, ensuring a consistent and automated environment across all client machines.
+    </p>
+</section>
+<!-- Extra Credit: Minimal Footprint Customization with TinyCore -->
+<section id="extra-credit" data-aos="fade-left">
+    <h2>Extra Credit: Minimal Footprint Customization with TinyCore</h2>
+    <p>
+        For users seeking to achieve the <strong>minimum possible footprint</strong> with TinyCore Linux, manually adding only the essential components can lead to a highly optimized and efficient PXE boot environment. This approach reduces resource usage, accelerates boot times, and minimizes potential attack surfaces, making it ideal for dedicated applications like kiosks or embedded systems.
+    </p>
+    <p>
+        This section outlines the steps to customize TinyCore Linux manually, ensuring that only the necessary components are included. By following these guidelines, you can tailor your PXE boot setup to meet specific requirements without the overhead of unnecessary packages.
+    </p>
+    
+    <ol>
+        <li>
+            <strong>Start with the Core TinyCore ISO:</strong>
+            <p>
+                Instead of using the <code>CorePlus</code> ISO, begin with the standard <code>TinyCore</code> ISO, which is significantly smaller (~11MB) and contains only the most essential components.
+            </p>
+            <pre><code>
+    # Download TinyCore ISO
+    wget http://tinycorelinux.net/11.x/x86/release/Core-current.iso -O tinycore.iso
+            </code></pre>
+        </li>
+        
+        <li>
+            <strong>Boot into TinyCore and Initialize:</strong>
+            <p>
+                Boot your system using the TinyCore ISO. Upon booting, you’ll be presented with a minimal command-line interface.
+            </p>
+            <p>
+                <strong>Update the Package Repository:</strong>
+            </p>
+            <pre><code>
+    # Update the package repository index
+    tce-update
+            </code></pre>
+        </li>
+        
+        <li>
+            <strong>Install Essential Extensions Manually:</strong>
+            <p>
+                Install only the necessary components required for a graphical environment and Chromium browser. This selective installation ensures minimal resource usage.
+            </p>
+            <pre><code>
+    # Install Xorg (display server)
+    tce-load -wi Xorg-7.7
+    
+    # Install a lightweight window manager (e.g., FLWM)
+    tce-load -wi flwm
+    
+    # Install Chromium browser
+    tce-load -wi chromium-browser
+    
+    # Install networking utilities
+    tce-load -wi net-tools
+    tce-load -wi dhcpcd
+    
+    # Install any additional dependencies required by Chromium
+    tce-load -wi libogg
+    tce-load -wi libvorbis
+    tce-load -wi libwebp
+            </code></pre>
+            <p>
+                <strong>Note:</strong> Only install extensions that are absolutely necessary for your use case. Avoid adding optional utilities or services that are not required.
+            </p>
+        </li>
+        
+        <li>
+            <strong>Configure the Graphical Environment:</strong>
+            <p>
+                Set up the window manager to launch Chromium automatically upon startup.
+            </p>
+            <ol>
+                <li>
+                    <strong>Create an Auto-start Script:</strong>
+                    <pre><code>
+    # Create the FLWM startup script
+    echo 'chromium-browser --no-sandbox --disable-gpu --start-maximized --app=https://www.9983.us &' > ~/.fluxbox/startup
+    chmod +x ~/.fluxbox/startup
+                    </code></pre>
+                </li>
+                <li>
+                    <strong>Set Up Xsession:</strong>
+                    <pre><code>
+    # Create or edit the .Xsession file to start FLWM
+    echo 'exec startfluxbox' > ~/.Xsession
+    chmod +x ~/.Xsession
+                    </code></pre>
+                </li>
+            </ol>
+        </li>
+        
+        <li>
+            <strong>Optimize System Services:</strong>
+            <p>
+                Disable or remove any unnecessary services to further reduce the system footprint.
+            </p>
+            <pre><code>
+    # List all installed extensions
+    ls /etc/sysconfig/tcedir
+
+    # Remove unnecessary extensions (example)
+    tce-remove <extension-name>
+            </code></pre>
+            <p>
+                <strong>Example:</strong> If sound support is not required, avoid installing <code>alsa-utils</code> or remove it if previously installed.
+            </p>
+        </li>
+        
+        <li>
+            <strong>Compress the Filesystem:</strong>
+            <p>
+                Compress the TinyCore filesystem to save space and improve loading times.
+            </p>
+            <pre><code>
+    # Create a tarball of the current filesystem
+    tar -czvf custom-tinycore.tar.gz /mnt/sysroot
+    
+    # Optionally, move the tarball to the PXE server's TFTP directory
+    sudo cp custom-tinycore.tar.gz /srv/tftp/
+            </code></pre>
+        </li>
+        
+        <li>
+            <strong>Integrate the Custom Filesystem into PXE Boot:</strong>
+            <p>
+                Update your PXE server configuration to use the newly created custom filesystem.
+            </p>
+            <pre><code>
+    # Edit the PXE bootloader configuration
+    sudo nano /srv/tftp/pxelinux.cfg/default
+
+    # Update the APPEND line to use the custom filesystem
+    DEFAULT custom
+    LABEL custom
+        KERNEL vmlinuz
+        APPEND initrd=custom-initramfs.gz boot=local
+            </code></pre>
+            <p>
+                <strong>Ensure:</strong> The <code>initramfs</code> includes the custom filesystem and necessary boot parameters.
+            </p>
+        </li>
+        
+        <li>
+            <strong>Test the Minimal PXE Boot Setup:</strong>
+            <p>
+                Before deploying to all client machines, test the PXE boot with a single client to verify that the system boots correctly and that Chromium launches as expected.
+            </p>
+            <pre><code>
+    # Restart PXE services to apply changes
+    sudo systemctl restart dnsmasq
+
+    # On the client machine, initiate PXE boot and observe the behavior
+            </code></pre>
+        </li>
+    </ol>
+    
+    <p>
+        <strong>Additional Optimization Tips:</strong>
+    </p>
+    <ul>
+        <li>
+            <strong>Use Lightweight Window Managers:</strong> Opt for window managers like <code>FLWM</code> or <code>Openbox</code> instead of heavier alternatives to conserve memory and processing power.
+        </li>
+        <li>
+            <strong>Limit Running Services:</strong> Only enable services that are essential for your application. For instance, if sound is not required, avoid installing audio-related packages.
+        </li>
+        <li>
+            <strong>Minimize Extensions:</strong> Carefully select and install only the TinyCore extensions that are necessary for your setup. Each additional extension increases the system footprint.
+        </li>
+        <li>
+            <strong>Automate Cleanup:</strong> Create scripts to automate the removal of temporary files or logs that are not needed, ensuring the system remains lean.
+        </li>
+    </ul>
+    
+    <p>
+        By meticulously selecting and configuring each component, you can create a highly efficient TinyCore Linux PXE boot environment tailored to your specific needs. This minimalistic approach not only enhances performance but also simplifies maintenance and reduces potential security vulnerabilities.
     </p>
 </section>
 
