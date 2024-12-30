@@ -186,7 +186,7 @@
             setCanvasSize();
             window.addEventListener('resize', setCanvasSize);
 
-            const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+            const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|]}";
             const fontSize = 16;
             const columns = Math.floor(canvas.width / fontSize);
             const drops = [];
@@ -225,7 +225,9 @@
                 if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 if (data.status !== 'ok') throw new Error('RSS feed data error');
-                const items = data.items.slice(0, 10).map(item => `<li><a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a></li>`).join('');
+                const items = data.items.slice(0, 10).map(item => {
+                    return `<li><a href="${item.link}" target="_blank" rel="noopener noreferrer">${item.title}</a></li>`;
+                }).join('');
                 rssContainer.innerHTML = `<ul>${items}</ul>`;
             } catch (error) {
                 console.error('Error loading RSS feed:', error);
@@ -255,133 +257,133 @@
             loadRSSFeeds();
         });
 
-document.addEventListener('DOMContentLoaded', () => {
-    let currentStep = 1;
-    let answers = {}; // Store user responses here
+        // Discovery Tool Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentStep = 1;
+            let answers = {}; // Store user responses here
 
-    const steps = [
-        {
-            question: "What type of business are you?",
-            options: ["Small Business", "Enterprise", "Government", "Non-Profit"],
-            nextStep: 2
-        },
-        {
-            question: "Do you have a dedicated IT security team?",
-            options: ["Yes", "No"],
-            nextStep: 3
-        },
-        {
-            question: "Which of the following security solutions are you currently using?",
-            options: ["Firewall", "Antivirus", "Intrusion Detection", "Endpoint Protection", "None"],
-            nextStep: 4
-        },
-        {
-            question: "Are you compliant with any cybersecurity standards? (e.g., ISO 27001, SOC 2)",
-            options: ["Yes", "No", "In Progress"],
-            nextStep: 5
-        },
-        {
-            question: "How frequently do you conduct vulnerability scans?",
-            options: ["Weekly", "Monthly", "Quarterly", "Never"],
-            nextStep: 6
-        },
-        {
-            question: "Do you have multi-factor authentication enabled on all sensitive systems?",
-            options: ["Yes", "No"],
-            nextStep: 7
-        },
-        {
-            question: "What is your primary method of backing up data?",
-            options: ["Cloud Backup", "On-premise Backup", "No Backup"],
-            nextStep: 8
-        }
-    ];
+            const steps = [
+                {
+                    question: "What type of business are you?",
+                    options: ["Small Business", "Enterprise", "Government", "Non-Profit"],
+                    nextStep: 2
+                },
+                {
+                    question: "Do you have a dedicated IT security team?",
+                    options: ["Yes", "No"],
+                    nextStep: 3
+                },
+                {
+                    question: "Which of the following security solutions are you currently using?",
+                    options: ["Firewall", "Antivirus", "Intrusion Detection", "Endpoint Protection", "None"],
+                    nextStep: 4
+                },
+                {
+                    question: "Are you compliant with any cybersecurity standards? (e.g., ISO 27001, SOC 2)",
+                    options: ["Yes", "No", "In Progress"],
+                    nextStep: 5
+                },
+                {
+                    question: "How frequently do you conduct vulnerability scans?",
+                    options: ["Weekly", "Monthly", "Quarterly", "Never"],
+                    nextStep: 6
+                },
+                {
+                    question: "Do you have multi-factor authentication enabled on all sensitive systems?",
+                    options: ["Yes", "No"],
+                    nextStep: 7
+                },
+                {
+                    question: "What is your primary method of backing up data?",
+                    options: ["Cloud Backup", "On-premise Backup", "No Backup"],
+                    nextStep: 8
+                }
+            ];
 
-    function displayQuestion(stepIndex) {
-        const step = steps[stepIndex];
-        const container = document.getElementById('discovery-tool');
+            function displayQuestion(stepIndex) {
+                const step = steps[stepIndex];
+                const container = document.getElementById('discovery-tool');
 
-        container.innerHTML = `
-            <h3>${step.question}</h3>
-            <ul>
-                ${step.options.map((option, index) => `
-                    <li>
-                        <input type="radio" name="answer" value="${option}" id="option-${index}" required> 
-                        <label for="option-${index}">${option}</label>
-                    </li>
-                `).join('')}
-            </ul>
-            <button onclick="nextStep(${stepIndex})">Next</button>
-        `;
-    }
+                container.innerHTML = `
+                    <h3>${step.question}</h3>
+                    <ul>
+                        ${step.options.map((option, index) => 
+                            `<li>
+                                <input type="radio" name="answer" value="${option}" id="option-${index}" required> 
+                                <label for="option-${index}">${option}</label>
+                            </li>`
+                        ).join('')}
+                    </ul>
+                    <button onclick="nextStep(${stepIndex})">Next</button>
+                `;
+            }
 
-    function nextStep(stepIndex) {
-        const answer = document.querySelector('input[name="answer"]:checked');
-        if (!answer) {
-            alert('Please select an answer!');
-            return;
-        }
+            function nextStep(stepIndex) {
+                const answer = document.querySelector('input[name="answer"]:checked');
+                if (!answer) {
+                    alert('Please select an answer!');
+                    return;
+                }
 
-        // Store the answer for this step
-        answers[`step${stepIndex}`] = answer.value;
+                // Store the answer for this step
+                answers[`step${stepIndex}`] = answer.value;
 
-        if (stepIndex + 1 < steps.length) {
-            displayQuestion(stepIndex + 1);
-        } else {
-            displayResults();
-        }
-    }
+                if (stepIndex + 1 < steps.length) {
+                    displayQuestion(stepIndex + 1);
+                } else {
+                    displayResults();
+                }
+            }
 
-    function displayResults() {
-        const container = document.getElementById('discovery-tool');
-        const results = [];
+            function displayResults() {
+                const container = document.getElementById('discovery-tool');
+                const results = [];
 
-        // Analyze the answers and provide specific recommendations
-        if (answers.step1 === "Small Business") {
-            results.push("<li>As a small business, you may have limited resources, so prioritize your most critical systems first.</li>");
-        } else if (answers.step1 === "Enterprise") {
-            results.push("<li>As an enterprise, ensure you're implementing centralized logging, threat hunting, and employee security training.</li>");
-        }
+                // Analyze the answers and provide specific recommendations
+                if (answers.step1 === "Small Business") {
+                    results.push("<li>As a small business, you may have limited resources, so prioritize your most critical systems first.</li>");
+                } else if (answers.step1 === "Enterprise") {
+                    results.push("<li>As an enterprise, ensure you're implementing centralized logging, threat hunting, and employee security training.</li>");
+                }
 
-        if (answers.step2 === "No") {
-            results.push("<li>It is recommended to invest in a dedicated IT security team to better handle risks and threats.</li>");
-        }
+                if (answers.step2 === "No") {
+                    results.push("<li>It is recommended to invest in a dedicated IT security team to better handle risks and threats.</li>");
+                }
 
-        if (answers.step3.includes("None")) {
-            results.push("<li>You should implement basic security tools like a firewall and antivirus software as a starting point.</li>");
-        }
+                if (answers.step3 && answers.step3.includes("None")) {
+                    results.push("<li>You should implement basic security tools like a firewall and antivirus software as a starting point.</li>");
+                }
 
-        if (answers.step4 === "No") {
-            results.push("<li>Consider getting certified with a recognized standard like ISO 27001 or SOC 2 to improve your cybersecurity posture.</li>");
-        } else if (answers.step4 === "In Progress") {
-            results.push("<li>Keep up the good work! Stay on track with your compliance efforts and ensure all necessary controls are in place.</li>");
-        }
+                if (answers.step4 === "No") {
+                    results.push("<li>Consider getting certified with a recognized standard like ISO 27001 or SOC 2 to improve your cybersecurity posture.</li>");
+                } else if (answers.step4 === "In Progress") {
+                    results.push("<li>Keep up the good work! Stay on track with your compliance efforts and ensure all necessary controls are in place.</li>");
+                }
 
-        if (answers.step5 === "Never") {
-            results.push("<li>Vulnerability scans are critical! You should implement regular scans to identify and fix vulnerabilities.</li>");
-        }
+                if (answers.step5 === "Never") {
+                    results.push("<li>Vulnerability scans are critical! You should implement regular scans to identify and fix vulnerabilities.</li>");
+                }
 
-        if (answers.step6 === "No") {
-            results.push("<li>Enabling multi-factor authentication (MFA) on sensitive systems is a must to protect your environment from unauthorized access.</li>");
-        }
+                if (answers.step6 === "No") {
+                    results.push("<li>Enabling multi-factor authentication (MFA) on sensitive systems is a must to protect your environment from unauthorized access.</li>");
+                }
 
-        if (answers.step7 === "No Backup") {
-            results.push("<li>Ensure you have a solid backup strategy in place. Cloud backups or on-premise backups are both good options for protecting your critical data.</li>");
-        }
+                if (answers.step7 === "No Backup") {
+                    results.push("<li>Ensure you have a solid backup strategy in place. Cloud backups or on-premise backups are both good options for protecting your critical data.</li>");
+                }
 
-        container.innerHTML = `
-            <h3>Discovery Completed</h3>
-            <p>Your answers indicate the following areas for improvement:</p>
-            <ul>
-                ${results.join('')}
-            </ul>
-            <p><a href="contact.html">Contact us for a more detailed assessment</a></p>
-        `;
-    }
+                container.innerHTML = `
+                    <h3>Discovery Completed</h3>
+                    <p>Your answers indicate the following areas for improvement:</p>
+                    <ul>
+                        ${results.join('')}
+                    </ul>
+                    <p><a href="contact.html">Contact us for a more detailed assessment</a></p>
+                `;
+            }
 
-    displayQuestion(0);
-});
-
+            displayQuestion(0);
+        });
     </script>
 </head>
 <body>
