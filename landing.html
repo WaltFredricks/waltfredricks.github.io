@@ -31,36 +31,36 @@
 
         /* Main Section Styles */
         main {
-            position: relative; /* To position the canvas absolutely within */
+            position: relative;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 30px;
             padding: 40px;
             max-width: 1200px;
             margin: 0 auto;
-            overflow: hidden; /* Hide overflow from canvas */
-            background: transparent; /* Ensure no background color overlaps the canvas */
+            overflow: hidden;
+            background: transparent;
         }
 
         /* Canvas for Matrix Background */
         #matrix-canvas {
-            position: fixed; /* Fixed to cover the entire viewport */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Place behind all content */
+            z-index: -1;
         }
 
         /* Tile Styles */
         .tile {
-            background: rgba(17, 24, 39, 0.85); /* Semi-transparent to show Matrix background */
+            background: rgba(17, 24, 39, 0.85);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.7);
             transition: transform 0.3s, box-shadow 0.3s;
-            position: relative; /* To stack above the canvas */
-            z-index: 1; /* Ensure tiles are above the canvas */
+            position: relative;
+            z-index: 1;
         }
 
         .tile:hover {
@@ -118,7 +118,7 @@
         .rss-feed {
             height: 300px;
             overflow-y: auto;
-            background-color: rgba(31, 41, 55, 0.85); /* Semi-transparent */
+            background-color: rgba(31, 41, 55, 0.85);
             border: 2px solid #3b82f6;
             padding: 15px;
             border-radius: 8px;
@@ -175,11 +175,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const canvas = document.createElement('canvas');
             canvas.id = 'matrix-canvas';
-            document.body.appendChild(canvas); // Append to body for full viewport coverage
+            document.body.appendChild(canvas);
 
             const ctx = canvas.getContext('2d');
 
-            // Adjust canvas size
             const setCanvasSize = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
@@ -187,32 +186,27 @@
             setCanvasSize();
             window.addEventListener('resize', setCanvasSize);
 
-            // Characters - taken from the unicode charset
             const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
             const fontSize = 16;
-            const columns = Math.floor(canvas.width / fontSize); // Number of columns for the rain
+            const columns = Math.floor(canvas.width / fontSize);
             const drops = [];
 
-            // Initialize drops
-            for(let x = 0; x < columns; x++) {
+            for (let x = 0; x < columns; x++) {
                 drops[x] = Math.random() * canvas.height / fontSize;
             }
 
-            // Draw the characters
             function draw() {
-                // Fade the background slightly to create a trailing effect
                 ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                ctx.fillStyle = "#00aaff"; // Blue text
+                ctx.fillStyle = "#00aaff";
                 ctx.font = fontSize + "px 'Roboto', sans-serif";
 
-                for(let i = 0; i < drops.length; i++) {
+                for (let i = 0; i < drops.length; i++) {
                     const text = matrix.charAt(Math.floor(Math.random() * matrix.length));
                     ctx.fillText(text, i * fontSize, drops[i] * fontSize);
 
-                    // Reset drop to top after it has moved beyond the canvas height
-                    if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
                         drops[i] = 0;
                     }
 
@@ -220,7 +214,7 @@
                 }
             }
 
-            setInterval(draw, 33); // Approximately 30 FPS
+            setInterval(draw, 33);
         });
 
         // Existing JavaScript Functions
@@ -259,6 +253,31 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadUserInfo();
             loadRSSFeeds();
+        });
+
+        // Interactive Security Audit
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('audit-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                const businessType = document.getElementById('business-type').value;
+                const currentTools = document.getElementById('current-tools').value;
+                const keyConcerns = document.getElementById('key-concerns').value;
+
+                const resultsDiv = document.getElementById('audit-results');
+                resultsDiv.innerHTML = `
+                    <h3>Audit Results</h3>
+                    <p><strong>Business Type:</strong> ${businessType}</p>
+                    <p><strong>Current Security Tools:</strong> ${currentTools}</p>
+                    <p><strong>Key Concerns:</strong> ${keyConcerns}</p>
+                    <p><strong>Recommendations:</strong></p>
+                    <ul>
+                        <li>Consider upgrading your firewall configuration.</li>
+                        <li>Ensure all antivirus tools are regularly updated.</li>
+                        <li>Schedule a vulnerability scan to identify potential gaps.</li>
+                    </ul>
+                    <p><a href="contact.html">Schedule a Consultation</a></p>
+                `;
+            });
         });
     </script>
 </head>
@@ -299,6 +318,40 @@
             <h2>Contact Us</h2>
             <p>Have questions? Reach out to us directly:</p>
             <p><a href="mailto:info@securedbyoctal.com">info@securedbyoctal.com</a></p>
+        </div>
+        <div class="tile">
+            <h2>Interactive Security Audit</h2>
+            <form id="audit-form">
+                <label for="business-type">Type of Business:</label>
+                <select id="business-type" required>
+                    <option value="small-business">Small Business</option>
+                    <option value="enterprise">Enterprise</option>
+                    <option value="government">Government</option>
+                </select>
+                
+                <label for="current-tools">Current Security Tools:</label>
+                <input type="text" id="current-tools" placeholder="E.g., firewall, antivirus" required>
+                
+                <label for="key-concerns">Key Concerns:</label>
+                <textarea id="key-concerns" placeholder="Describe your security concerns" required></textarea>
+                
+                <button type="submit">Get Audit Results</button>
+            </form>
+            
+            <div id="audit-results" class="results">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+        <div class="tile">
+            <h2>Industry Insights & Reports</h2>
+            <p>Stay informed about the latest trends in cybersecurity with our reports and insights.</p>
+            <ul>
+                <li><a href="report1.pdf" download>2024 Cybersecurity Trends Report</a> - A comprehensive look at the biggest cybersecurity threats of 2024.</li>
+                <li><a href="report2.pdf" download>Vulnerability Management Best Practices</a> - Key practices to manage vulnerabilities in your organization.</li>
+                <li><a href="report3.pdf" download>Next-Gen Threat Detection Solutions</a> - Innovative technologies for detecting advanced cyber threats.</li>
+            </ul>
+            
+            <p>Want to receive the latest reports directly to your inbox? <a href="subscribe.html">Subscribe Now</a></p>
         </div>
     </main>
     <footer>© 2024 Octal Security Inc. All Rights Reserved. Designed for Security.</footer>
