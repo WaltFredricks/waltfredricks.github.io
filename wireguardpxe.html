@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PXE Boot Over WireGuard</title>
+    <meta name="description" content="A comprehensive guide to setting up PXE booting over WireGuard VPN. Learn how to route PXE traffic through WireGuard, configure PXE boot clients, and troubleshoot common issues.">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-pVnVn1zFL7Gq+0wK50Yy2fB3uQAdzPjRS5ppI0q2rDRbG3qD06mgIvJtZV6A3JZ2ibg9QXo6l9+WhvYMg8+bMw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- AOS CSS for Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #0E1B2A;
+            color: #E0E8F9;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1A3568;
+            padding: 20px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #E0E8F9;
+            margin: 0;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: #A9C1D9;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #16325A;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        section h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+
+        section p {
+            margin-bottom: 15px;
+        }
+
+        pre {
+            background-color: #1A3568;
+            color: #E0E8F9;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+        }
+
+        code {
+            background-color: #1A3568;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.95rem;
+        }
+
+        a {
+            color: #FFD700;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #FFFFFF;
+        }
+
+        footer {
+            background-color: #1A3568;
+            text-align: center;
+            padding: 20px 0;
+            color: #A9C1D9;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>PXE Boot Over WireGuard</h1>
+        <nav>
+            <a href="#introduction"><i class="fas fa-info-circle"></i> Introduction</a>
+            <a href="#step-1"><i class="fas fa-server"></i> Set up WireGuard</a>
+            <a href="#step-2"><i class="fas fa-cogs"></i> Configure PXE Server</a>
+            <a href="#step-3"><i class="fas fa-network-wired"></i> PXE Boot Setup</a>
+            <a href="#troubleshooting"><i class="fas fa-tools"></i> Troubleshooting</a>
+            <a href="#conclusion"><i class="fas fa-check-circle"></i> Conclusion</a>
+        </nav>
+    </header>
+
+    <main class="container" data-aos="fade-up">
+
+        <!-- Introduction -->
+        <section id="introduction" data-aos="fade-right">
+            <h2>Introduction</h2>
+            <p>
+                PXE booting over a VPN, such as WireGuard, enables secure and efficient network booting over encrypted channels. This guide will help you configure PXE booting through WireGuard, including routing PXE traffic and setting up both client and server configurations for successful deployment.
+            </p>
+        </section>
+
+        <!-- Step 1: Set up WireGuard -->
+        <section id="step-1" data-aos="fade-left">
+            <h2>Step 1: Set up WireGuard VPN</h2>
+            <p>Start by configuring the WireGuard tunnel between the PXE client and server.</p>
+            <pre><code>
+# On the WireGuard server, configure the peer
+[Interface]
+Address = 10.0.0.1/24
+PrivateKey = <server_private_key>
+
+[Peer]
+PublicKey = <client_public_key>
+AllowedIPs = 10.0.0.2/32  # Client IP for PXE boot
+            </code></pre>
+            <p>
+                Ensure that the PXE server is correctly configured with routing rules to pass DHCP and TFTP traffic over the VPN.
+            </p>
+        </section>
+
+        <!-- Step 2: Configure PXE Server -->
+        <section id="step-2" data-aos="fade-right">
+            <h2>Step 2: Configure PXE Server</h2>
+            <p>Next, configure the PXE server to handle DHCP and TFTP requests from the PXE client over the WireGuard VPN.</p>
+            <pre><code>
+# Install and configure dnsmasq for DHCP and TFTP
+sudo apt-get update
+sudo apt-get install dnsmasq
+
+# Edit /etc/dnsmasq.conf
+interface=eth0                  # Network interface for PXE
+dhcp-range=192.168.1.100,192.168.1.150,12h  # IP range
+enable-tftp
+tftp-root=/srv/tftp
+pxe-service=x86PC, "TinyCore PXE Boot", pxelinux
+            </code></pre>
+            <p>Set up the TFTP root directory with the necessary boot files from TinyCore Linux or another appropriate image.</p>
+        </section>
+
+        <!-- Step 3: PXE Boot Setup -->
+        <section id="step-3" data-aos="fade-left">
+            <h2>Step 3: PXE Boot Setup</h2>
+            <p>Configure the PXE client to boot from the server. Ensure that the client’s BIOS/UEFI settings are configured to PXE boot, and that the PXE server provides the correct boot image.</p>
+            <pre><code>
+# PXE client configuration (example for iPXE)
+kernel vmlinuz
+initrd initrd.gz
+boot
+            </code></pre>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting" data-aos="fade-left">
+            <h2>Troubleshooting</h2>
+            <p>If you run into issues, here are common problems and their solutions:</p>
+            <ul>
+                <li><strong>DHCP Server Not Assigning IP:</strong> Ensure that the DHCP service is running, and check if the correct interface is configured for PXE.</li>
+                <li><strong>TFTP Server Not Serving Files:</strong> Verify TFTP permissions and firewall settings. Ensure that the TFTP root directory contains the correct files.</li>
+                <li><strong>Client Not Booting:</strong> Check the bootloader configuration and ensure that the client is receiving the correct boot image.</li>
+            </ul>
+        </section>
+
+        <!-- Conclusion -->
+        <section id="conclusion" data-aos="fade-left">
+            <h2>Conclusion</h2>
+            <p>
+                By following these steps, you can successfully implement PXE booting over WireGuard, allowing secure and efficient network booting across your infrastructure. Whether for remote deployments or securing boot traffic, WireGuard offers a reliable solution for your PXE setup.
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 PXE Boot Over WireGuard Guide. All rights reserved.</p>
+    </footer>
+
+    <!-- AOS JS for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+</body>
+
+</html>
