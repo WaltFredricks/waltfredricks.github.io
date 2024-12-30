@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide to Embedded Systems: Ultimate SBC Handbook</title>
+    <meta name="description" content="A detailed guide to Embedded Systems focusing on the best, cheapest, fastest, and most secure Single Board Computers (SBCs) available, including pricing, technical specifications, and useful links.">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVnVn1zFL7Gq+0wK50Yy2fB3uQAdzPjRS5ppI0q2rDRbG3qD06mgIvJtZV6A3JZ2ibg9QXo6l9+WhvYMg8+bMw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- AOS CSS for Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #122A52; /* Deep blue background */
+            color: #E0E8F9; /* Light text for contrast */
+            line-height: 1.6;
+        }
+
+        a {
+            color: #E0E8F9;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        a:focus,
+        a:hover {
+            background-color: #1A3568;
+            color: #FFFFFF;
+            outline: none;
+        }
+
+        /* Header */
+        header {
+            background-color: #1A3568; /* Darker blue for header */
+            color: #E0E8F9;
+            padding: 40px 0;
+            text-align: center;
+            border-bottom: 2px solid #0E203E;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        header p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        nav {
+            background-color: #0E203E; /* Even darker blue for navigation */
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            padding: 15px 20px;
+            display: block;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a i {
+            margin-right: 8px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 80px;
+            padding: 20px;
+            background-color: #16325A;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #E0E8F9;
+            padding-bottom: 10px;
+            display: inline-block;
+            position: relative;
+        }
+
+        section h2::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 4px;
+            background-color: #E0E8F9;
+            left: 0;
+            bottom: -2px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background-color: #1A3568; /* Table background */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #0E203E;
+            padding: 15px 20px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0E203E;
+            color: #E0E8F9;
+        }
+
+        tr:nth-child(even) {
+            background-color: #16325A;
+        }
+
+        /* Code Blocks */
+        pre {
+            background-color: #1A3568;
+            padding: 20px;
+            overflow-x: auto;
+            color: #E0E8F9;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0E203E;
+            color: #E0E8F9;
+            text-align: center;
+            padding: 20px 0;
+            position: relative;
+            width: 100%;
+            border-top: 2px solid #1A3568;
+        }
+
+        /* Back-to-Top Button */
+        #back-to-top {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            background-color: #1A3568;
+            color: #E0E8F9;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #back-to-top:hover {
+            background-color: #16325A;
+            transform: scale(1.1);
+        }
+
+        /* Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Responsive Table */
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            th {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                margin-bottom: 1rem;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+            }
+
+            td::before {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+
+            td:nth-of-type(1)::before { content: "SBC Name"; }
+            td:nth-of-type(2)::before { content: "Price"; }
+            td:nth-of-type(3)::before { content: "Processor"; }
+            td:nth-of-type(4)::before { content: "RAM"; }
+            td:nth-of-type(5)::before { content: "Storage"; }
+            td:nth-of-type(6)::before { content: "Connectivity"; }
+            td:nth-of-type(7)::before { content: "Link"; }
+        }
+    </style>
+</head>
+
+<body>
+    <header data-aos="fade-down">
+        <h1>Guide to Embedded Systems: Ultimate SBC Handbook</h1>
+        <p>Explore the best, cheapest, fastest, and most secure Single Board Computers (SBCs) available in the market, complete with pricing, technical specifications, and useful links.</p>
+    </header>
+
+    <nav aria-label="Main Navigation">
+        <a href="#introduction" data-aos="fade-down" data-aos-delay="100"><i class="fas fa-info-circle"></i> Introduction</a>
+        <a href="#best" data-aos="fade-down" data-aos-delay="200"><i class="fas fa-trophy"></i> Best SBCs</a>
+        <a href="#cheapest" data-aos="fade-down" data-aos-delay="300"><i class="fas fa-dollar-sign"></i> Cheapest SBCs</a>
+        <a href="#fastest" data-aos="fade-down" data-aos-delay="400"><i class="fas fa-tachometer-alt"></i> Fastest SBCs</a>
+        <a href="#most-secure" data-aos="fade-down" data-aos-delay="500"><i class="fas fa-shield-alt"></i> Most Secure SBCs</a>
+        <a href="#buying-guide" data-aos="fade-down" data-aos-delay="600"><i class="fas fa-shopping-cart"></i> Buying Guide</a>
+        <a href="#applications" data-aos="fade-down" data-aos-delay="700"><i class="fas fa-cogs"></i> Applications</a>
+        <a href="#faqs" data-aos="fade-down" data-aos-delay="800"><i class="fas fa-question-circle"></i> FAQs</a>
+        <a href="#resources" data-aos="fade-down" data-aos-delay="900"><i class="fas fa-book"></i> Resources</a>
+    </nav>
+
+    <main class="container">
+        <!-- Introduction Section -->
+        <section id="introduction" data-aos="fade-up">
+            <h2>Introduction</h2>
+            <p>Single Board Computers (SBCs) are compact, affordable, and versatile computing platforms widely used in embedded systems, IoT projects, robotics, education, and more. This guide highlights some of the best SBCs available in 2023, categorized by their strengths in various aspects such as cost, performance, and security.</p>
+        </section>
+
+        <!-- Best SBCs Section -->
+        <section id="best" data-aos="fade-up" data-aos-delay="100">
+            <h2>Best SBCs</h2>
+            <p>The following SBCs are recognized for their overall performance, versatility, and community support:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SBC Name</th>
+                        <th>Price</th>
+                        <th>Processor</th>
+                        <th>RAM</th>
+                        <th>Storage</th>
+                        <th>Connectivity</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Raspberry Pi 4 Model B</td>
+                        <td>$55 - $75</td>
+                        <td>Quad-core Cortex-A72 (ARM v8)</td>
+                        <td>2GB, 4GB, or 8GB LPDDR4</td>
+                        <td>MicroSD</td>
+                        <td>Gigabit Ethernet, 802.11ac Wi-Fi, Bluetooth 5.0, 2 USB 3.0, 2 USB 2.0</td>
+                        <td><a href="https://www.raspberrypi.org/products/raspberry-pi-4-model-b/" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>ODROID-N2+</td>
+                        <td>$65 - $80</td>
+                        <td>Quad-core Cortex-A73 + Dual-core Cortex-A53</td>
+                        <td>2GB or 4GB DDR4</td>
+                        <td>eMMC, MicroSD</td>
+                        <td>Gigabit Ethernet, 802.11ac Wi-Fi (via adapter), Bluetooth 5.0</td>
+                        <td><a href="https://www.hardkernel.com/shop/odroid-n2-plus/" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>ASUS Tinker Board S</td>
+                        <td>$85</td>
+                        <td>Quad-core Cortex-A17</td>
+                        <td>2GB DDR3</td>
+                        <td>16GB eMMC, MicroSD</td>
+                        <td>Gigabit Ethernet, 802.11 b/g/n, Bluetooth 4.0</td>
+                        <td><a href="https://www.asus.com/us/Single-Board-Computer/Tinker-Board-S/" target="_blank">Buy Now</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Cheapest SBCs Section -->
+        <section id="cheapest" data-aos="fade-up" data-aos-delay="200">
+            <h2>Cheapest SBCs</h2>
+            <p>For those on a tight budget, these SBCs offer excellent value without compromising essential features:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SBC Name</th>
+                        <th>Price</th>
+                        <th>Processor</th>
+                        <th>RAM</th>
+                        <th>Storage</th>
+                        <th>Connectivity</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Raspberry Pi Zero W</td>
+                        <td>$10</td>
+                        <td>Single-core ARM1176JZF-S</td>
+                        <td>512MB LPDDR2</td>
+                        <td>MicroSD</td>
+                        <td>802.11n Wi-Fi, Bluetooth 4.1, Mini HDMI, USB On-The-Go</td>
+                        <td><a href="https://www.raspberrypi.org/products/raspberry-pi-zero-w/" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>Orange Pi Zero</td>
+                        <td>$15</td>
+                        <td>Dual-core Cortex-A7</td>
+                        <td>512MB DDR3</td>
+                        <td>eMMC, MicroSD</td>
+                        <td>Ethernet, Wi-Fi (optional module)</td>
+                        <td><a href="http://www.orangepi.org/OrangePiZero/" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>Banana Pi M2 Zero</td>
+                        <td>$20</td>
+                        <td>Quad-core Cortex-A53</td>
+                        <td>512MB DDR2</td>
+                        <td>MicroSD</td>
+                        <td>Wi-Fi, Bluetooth 4.1, HDMI, USB 2.0</td>
+                        <td><a href="http://www.banana-pi.org/m2zero/" target="_blank">Buy Now</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Fastest SBCs Section -->
+        <section id="fastest" data-aos="fade-up" data-aos-delay="300">
+            <h2>Fastest SBCs</h2>
+            <p>These SBCs are renowned for their high performance, making them ideal for demanding applications like media centers, gaming, and complex computations:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SBC Name</th>
+                        <th>Price</th>
+                        <th>Processor</th>
+                        <th>RAM</th>
+                        <th>Storage</th>
+                        <th>Connectivity</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>NVIDIA Jetson Nano</td>
+                        <td>$99</td>
+                        <td>Quad-core ARM Cortex-A57</td>
+                        <td>4GB LPDDR4</td>
+                        <td>MicroSD</td>
+                        <td>Gigabit Ethernet, USB 3.0, GPIO</td>
+                        <td><a href="https://developer.nvidia.com/embedded/jetson-nano-developer-kit" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>Rock Pi 4 Model B</td>
+                        <td>$60 - $80</td>
+                        <td>Hexa-core RK3399 (Dual Cortex-A72 + Quad Cortex-A53)</td>
+                        <td>4GB or 8GB LPDDR4</td>
+                        <td>eMMC, MicroSD</td>
+                        <td>Gigabit Ethernet, 802.11ac Wi-Fi, Bluetooth 5.0, USB 3.0</td>
+                        <td><a href="https://rockpi.org/products/rock-pi-4" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>UDOO Bolt V8</td>
+                        <td>$399</td>
+                        <td>AMD Ryzen Embedded V1605B (4 cores, 8 threads)</td>
+                        <td>8GB DDR4</td>
+                        <td>M.2 SSD</td>
+                        <td>Dual Gigabit Ethernet, 802.11ac Wi-Fi, Bluetooth 5.0, USB 3.1</td>
+                        <td><a href="https://www.udoo.org/bolt/" target="_blank">Buy Now</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Most Secure SBCs Section -->
+        <section id="most-secure" data-aos="fade-up" data-aos-delay="400">
+            <h2>Most Secure SBCs</h2>
+            <p>Security-focused SBCs come with enhanced features to ensure data protection, secure boot, and robust encryption, making them suitable for sensitive applications:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>SBC Name</th>
+                        <th>Price</th>
+                        <th>Processor</th>
+                        <th>RAM</th>
+                        <th>Storage</th>
+                        <th>Connectivity</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Raspberry Pi 4 Model B (with Security Enhancements)</td>
+                        <td>$55 - $75</td>
+                        <td>Quad-core Cortex-A72 (ARM v8)</td>
+                        <td>2GB, 4GB, or 8GB LPDDR4</td>
+                        <td>MicroSD</td>
+                        <td>Gigabit Ethernet, 802.11ac Wi-Fi, Bluetooth 5.0, 2 USB 3.0, 2 USB 2.0</td>
+                        <td><a href="https://www.raspberrypi.org/products/raspberry-pi-4-model-b/" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>Banana Pi BPI-M4</td>
+                        <td>$75</td>
+                        <td>Quad-core Cortex-A53</td>
+                        <td>1GB or 2GB DDR3</td>
+                        <td>eMMC, MicroSD</td>
+                        <td>Gigabit Ethernet, 802.11ac Wi-Fi, Bluetooth 4.2</td>
+                        <td><a href="http://www.banana-pi.org/BPI-M4/" target="_blank">Buy Now</a></td>
+                    </tr>
+                    <tr>
+                        <td>BeagleBone AI</td>
+                        <td>$125</td>
+                        <td>Dual-core ARM Cortex-A15</td>
+                        <td>1GB DDR3</td>
+                        <td>eMMC, MicroSD</td>
+                        <td>Gigabit Ethernet, USB 3.0, Wi-Fi (via adapter)</td>
+                        <td><a href="https://beagleboard.org/ai" target="_blank">Buy Now</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Buying Guide Section -->
+        <section id="buying-guide" data-aos="fade-up" data-aos-delay="500">
+            <h2>Buying Guide</h2>
+            <p>Choosing the right SBC depends on your specific needs and project requirements. Consider the following factors when selecting an SBC:</p>
+            <ul>
+                <li><strong>Performance:</strong> Assess the processor speed, number of cores, and RAM to ensure it meets your computational needs.</li>
+                <li><strong>Price:</strong> Determine your budget and find an SBC that offers the best features within that range.</li>
+                <li><strong>Connectivity:</strong> Ensure the SBC has the necessary ports and wireless capabilities for your project.</li>
+                <li><strong>Storage:</strong> Consider the type and capacity of storage options available.</li>
+                <li><strong>Community Support:</strong> A strong community can provide valuable resources, tutorials, and troubleshooting assistance.</li>
+                <li><strong>Security Features:</strong> For sensitive applications, look for SBCs with enhanced security features like secure boot and hardware encryption.</li>
+                <li><strong>Power Consumption:</strong> Especially important for battery-powered or energy-efficient projects.</li>
+                <li><strong>Size and Form Factor:</strong> Ensure the SBC fits within the physical constraints of your project.</li>
+            </ul>
+        </section>
+
+        <!-- Applications Section -->
+        <section id="applications" data-aos="fade-up" data-aos-delay="600">
+            <h2>Applications</h2>
+            <p>SBCs are versatile and can be used in a wide range of applications, including but not limited to:</p>
+            <ul>
+                <li><strong>IoT Devices:</strong> Home automation, smart sensors, and connected appliances.</li>
+                <li><strong>Robotics:</strong> Control systems for robots, drones, and automated machinery.</li>
+                <li><strong>Media Centers:</strong> Streaming media players, home theaters, and gaming consoles.</li>
+                <li><strong>Education:</strong> Teaching programming, electronics, and computer science concepts.</li>
+                <li><strong>Prototyping:</strong> Rapid development of electronic prototypes and products.</li>
+                <li><strong>Security Systems:</strong> Surveillance cameras, access control, and intrusion detection.</li>
+                <li><strong>Networking:</strong> Network-attached storage (NAS), routers, and VPN servers.</li>
+            </ul>
+        </section>
+
+        <!-- FAQs Section -->
+        <section id="faqs" data-aos="fade-up" data-aos-delay="700">
+            <h2>FAQs</h2>
+            <div>
+                <h3>1. What is a Single Board Computer (SBC)?</h3>
+                <p>A Single Board Computer (SBC) is a complete computer built on a single circuit board, containing all the necessary components like the processor, memory, and input/output interfaces.</p>
+            </div>
+            <div>
+                <h3>2. How do I choose the right SBC for my project?</h3>
+                <p>Consider factors such as performance requirements, budget, connectivity options, community support, and specific features needed for your project.</p>
+            </div>
+            <div>
+                <h3>3. Are SBCs suitable for commercial products?</h3>
+                <p>Yes, many SBCs are used in commercial products due to their compact size, reliability, and versatility. Ensure you comply with licensing and usage terms.</p>
+            </div>
+            <div>
+                <h3>4. Can I run multiple operating systems on an SBC?</h3>
+                <p>Most SBCs support multiple operating systems, including various Linux distributions, Android, and specialized OSes like Windows IoT Core.</p>
+            </div>
+            <div>
+                <h3>5. What accessories do I need to get started with an SBC?</h3>
+                <p>Essential accessories include a power supply, microSD card or storage device, case, HDMI cable, keyboard and mouse, and possibly additional modules like Wi-Fi adapters or sensors.</p>
+            </div>
+        </section>
+
+        <!-- Resources Section -->
+        <section id="resources" data-aos="fade-up" data-aos-delay="800">
+            <h2>Resources</h2>
+            <p>Enhance your knowledge and skills with these additional resources:</p>
+            <ul>
+                <li><a href="https://www.raspberrypi.org/" target="_blank">Raspberry Pi Official Website</a> - Resources, tutorials, and community support for Raspberry Pi.</li>
+                <li><a href="https://www.hardkernel.com/" target="_blank">Hardkernel (ODROID)</a> - Official site for ODROID SBCs, including documentation and support.</li>
+                <li><a href="https://www.asus.com/motherboards-components/Single-Board-Computers/" target="_blank">ASUS SBCs</a> - Explore ASUS's range of Single Board Computers.</li>
+                <li><a href="https://www.arm.com/" target="_blank">ARM Developer</a> - Information on ARM processors used in many SBCs.</li>
+                <li><a href="https://www.element14.com/community/community/raspberry-pi" target="_blank">Element14 Raspberry Pi Community</a> - Forums and discussions on Raspberry Pi projects.</li>
+                <li><a href="https://www.makeuseof.com/tag/best-single-board-computers/" target="_blank">MakeUseOf - Best Single Board Computers</a> - Reviews and comparisons of various SBCs.</li>
+                <li><a href="https://www.instructables.com/howto/single+board+computer/" target="_blank">Instructables SBC Projects</a> - DIY projects and tutorials using SBCs.</li>
+                <li><a href="https://www.coursera.org/courses?query=embedded%20systems" target="_blank">Coursera Embedded Systems Courses</a> - Online courses to learn about embedded systems and SBCs.</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Octal Technology Inc. All rights reserved.</p>
+    </footer>
+
+    <!-- Back-to-Top Button -->
+    <button id="back-to-top" aria-label="Back to Top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- AOS JS for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'slide',
+            once: true
+        });
+
+        // Back-to-Top Button Functionality
+        const backToTopButton = document.getElementById('back-to-top');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+
+</html>
