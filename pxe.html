@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyCore Linux PXE Boot with Chromium</title>
+    <meta name="description" content="A comprehensive guide to setting up a minimal TinyCore Linux PXE boot that autolaunches Chromium to a specified website. Explore various PXE server options and optimize your network boot environment.">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-pVnVn1zFL7Gq+0wK50Yy2fB3uQAdzPjRS5ppI0q2rDRbG3qD06mgIvJtZV6A3JZ2ibg9QXo6l9+WhvYMg8+bMw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- AOS CSS for Animations -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #0E1B2A;
+            color: #E0E8F9;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1A3568;
+            padding: 20px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: #E0E8F9;
+            margin: 0;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: #A9C1D9;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            margin: 40px 0;
+            padding: 20px;
+            background-color: #16325A;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        section h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+
+        section p {
+            margin-bottom: 15px;
+        }
+
+        pre {
+            background-color: #1A3568;
+            color: #E0E8F9;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+        }
+
+        code {
+            background-color: #1A3568;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.95rem;
+        }
+
+        a {
+            color: #FFD700;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #FFFFFF;
+        }
+
+        footer {
+            background-color: #1A3568;
+            text-align: center;
+            padding: 20px 0;
+            color: #A9C1D9;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            nav a {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>TinyCore Linux PXE Boot with Chromium</h1>
+        <nav>
+            <a href="#introduction"><i class="fas fa-info-circle"></i> Introduction</a>
+            <a href="#step-1"><i class="fas fa-server"></i> Prepare Environment</a>
+            <a href="#step-2"><i class="fas fa-cogs"></i> Install Components</a>
+            <a href="#step-3"><i class="fas fa-rocket"></i> Configure Auto-start</a>
+            <a href="#step-4"><i class="fas fa-network-wired"></i> Configure PXE Boot</a>
+            <a href="#pxe-servers"><i class="fas fa-network-alt"></i> PXE Server Options</a>
+            <a href="#troubleshooting"><i class="fas fa-tools"></i> Troubleshooting</a>
+            <a href="#conclusion"><i class="fas fa-check-circle"></i> Conclusion</a>
+        </nav>
+    </header>
+
+    <main class="container" data-aos="fade-up">
+
+        <!-- Introduction -->
+        <section id="introduction" data-aos="fade-right">
+            <h2>Introduction</h2>
+            <p>
+                This comprehensive guide will walk you through setting up a minimal <strong>TinyCore Linux PXE boot</strong> system that automatically launches <strong>Chromium</strong> and navigates to <a href="https://www.9983.us" target="_blank">https://www.9983.us</a>. By leveraging PXE (Preboot Execution Environment) booting, you can create a lightweight, fast-booting environment tailored for specific web-based applications, ideal for kiosks, digital signage, or dedicated browsing stations.
+            </p>
+            <p>
+                Whether you're deploying multiple machines in a network or seeking a minimalistic boot solution, TinyCore Linux offers the flexibility and efficiency required for streamlined operations.
+            </p>
+        </section>
+
+        <!-- Step 1: Prepare Environment -->
+        <section id="step-1" data-aos="fade-left">
+            <h2>Step 1: Prepare Your Environment</h2>
+            <p>Begin by downloading and preparing the necessary TinyCore Linux environment:</p>
+            <ul>
+                <li>
+                    <strong>Download CorePlus ISO (~16MB):</strong> Visit the <a href="http://tinycorelinux.net/downloads.html" target="_blank">TinyCore Linux downloads page</a> and download the <code>CorePlus</code> ISO, which includes additional utilities required for network booting.
+                </li>
+                <li>
+                    <strong>Set Up Boot Media:</strong> Choose one of the following methods to prepare your boot media:
+                    <ul>
+                        <li><strong>Virtual Machine:</strong> Use virtualization software like <a href="https://www.virtualbox.org/" target="_blank">VirtualBox</a> or <a href="https://www.vmware.com/products/workstation-player.html" target="_blank">VMware Workstation Player</a>.</li>
+                        <li><strong>Live USB:</strong> Create a bootable USB drive using tools like <a href="https://rufus.ie/" target="_blank">Rufus</a> or <a href="https://www.balena.io/etcher/" target="_blank">Balena Etcher</a>.</li>
+                        <li><strong>PXE Environment:</strong> Set up a PXE server to facilitate network booting across multiple machines.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Network Configuration:</strong> Ensure your network is configured to support PXE booting, including DHCP and TFTP services.
+                </li>
+            </ul>
+        </section>
+
+        <!-- Step 2: Install Required Components -->
+        <section id="step-2" data-aos="fade-right">
+            <h2>Step 2: Install Required Components</h2>
+            <p>After booting into TinyCore Linux, install the necessary components to enable a graphical environment and Chromium browser:</p>
+            <pre><code>
+# Update package list
+tce-update
+
+# Ensure networking is active
+tce-load -wi Xorg-7.7
+
+# Install Chromium
+sudo tce-load -wi chromium-browser
+
+# Install additional utilities (optional but recommended)
+sudo tce-load -wi alsa-utils # For sound support
+sudo tce-load -wi lxappearance # For appearance settings
+            </code></pre>
+            <p>
+                These commands ensure that Xorg (the display server) is installed, Chromium is available, and additional utilities enhance the user experience.
+            </p>
+        </section>
+
+        <!-- Step 3: Configure Auto-start for Chromium -->
+        <section id="step-3" data-aos="fade-left">
+            <h2>Step 3: Configure Auto-start for Chromium</h2>
+            <p>Set up scripts to automatically start Xorg and launch Chromium upon boot:</p>
+            <ol>
+                <li>
+                    <strong>Create Chromium Launch Script:</strong>
+                    <pre><code>
+echo 'chromium-browser --no-sandbox --disable-gpu --start-maximized --app=https://www.9983.us &' > ~/.X.d/chromium.sh
+chmod +x ~/.X.d/chromium.sh
+                    </code></pre>
+                </li>
+                <li>
+                    <strong>Ensure Xorg Starts Automatically:</strong>
+                    <pre><code>
+# Create or edit the .Xsession file
+echo 'exec startx' > ~/.Xsession
+chmod +x ~/.Xsession
+                    </code></pre>
+                </li>
+                <li>
+                    <strong>Set Up Autologin (Optional):</strong> For a seamless experience, configure the system to log in automatically:
+                    <pre><code>
+# Edit the /opt/bootlocal.sh file
+sudo nano /opt/bootlocal.sh
+
+# Add the following lines to enable autologin
+echo 'exec startx' >> /opt/bootlocal.sh
+chmod +x /opt/bootlocal.sh
+                    </code></pre>
+                </li>
+            </ol>
+            <p>
+                These configurations ensure that upon system boot, the graphical environment starts, and Chromium launches automatically directed to your specified website.
+            </p>
+        </section>
+
+        <!-- Step 4: Configure PXE Boot -->
+        <section id="step-4" data-aos="fade-right">
+            <h2>Step 4: Configure PXE Boot</h2>
+            <p>Set up your PXE server to facilitate network booting. Below is a general configuration example using <strong>dnsmasq</strong>:</p>
+            <ol>
+                <li>
+                    <strong>Install dnsmasq:</strong>
+                    <pre><code>
+sudo apt-get update
+sudo apt-get install dnsmasq
+                    </code></pre>
+                </li>
+                <li>
+                    <strong>Configure dnsmasq:</strong>
+                    <pre><code>
+# Backup original configuration
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.backup
+
+# Create new configuration
+sudo nano /etc/dnsmasq.conf
+
+# Add the following lines:
+interface=eth0                  # Network interface for PXE
+dhcp-range=192.168.1.100,192.168.1.150,12h  # IP range
+enable-tftp
+tftp-root=/srv/tftp
+pxe-service=x86PC, "TinyCore PXE Boot", pxelinux
+                </code></pre>
+                </li>
+                <li>
+                    <strong>Set Up TFTP Root Directory:</strong>
+                    <pre><code>
+sudo mkdir -p /srv/tftp
+cd /srv/tftp
+
+# Extract TinyCore Linux boot files
+sudo tar -xzvf /path/to/tinycore.iso -C /srv/tftp
+# Alternatively, copy necessary boot files manually
+                </code></pre>
+                </li>
+                <li>
+                    <strong>Start and Enable dnsmasq:</strong>
+                    <pre><code>
+sudo systemctl start dnsmasq
+sudo systemctl enable dnsmasq
+                </code></pre>
+                </li>
+            </ol>
+            <p>
+                This setup configures <strong>dnsmasq</strong> as both a DHCP and TFTP server, enabling PXE booting for client machines within the specified IP range. Ensure that the network interface (<code>eth0</code> in this example) matches your server's configuration.
+            </p>
+        </section>
+
+        <!-- PXE Server Options -->
+        <section id="pxe-servers" data-aos="fade-left">
+            <h2>PXE Server Options</h2>
+            <p>Choosing the right PXE server software depends on your specific needs, existing infrastructure, and familiarity with various tools. Below are some popular PXE server options with their key features:</p>
+
+            <!-- dnsmasq -->
+            <article data-aos="fade-up">
+                <h3><i class="fas fa-network-alt"></i> dnsmasq</h3>
+                <p>
+                    <strong>Overview:</strong> dnsmasq is a lightweight DNS, DHCP, TFTP, and PXE server designed for small-scale deployments. It's easy to configure and ideal for simple network environments.
+                </p>
+                <ul>
+                    <li>All-in-one solution: DNS, DHCP, TFTP, and PXE services.</li>
+                    <li>Simple configuration with a single config file.</li>
+                    <li>Lightweight and resource-efficient.</li>
+                    <li>Suitable for small to medium-sized networks.</li>
+                </ul>
+                <p>
+                    <strong>Pros:</strong> Easy setup, minimal dependencies, versatile functionality.
+                </p>
+                <p>
+                    <strong>Cons:</strong> Limited advanced features compared to dedicated DHCP or TFTP servers.
+                </p>
+                <a href="https://thekelleys.org.uk/dnsmasq/doc.html" target="_blank">Learn more about dnsmasq</a>
+            </article>
+
+            <!-- ISC DHCP with TFTP-HPA -->
+            <article data-aos="fade-up" data-aos-delay="200">
+                <h3><i class="fas fa-server"></i> ISC DHCP with tftpd-hpa</h3>
+                <p>
+                    <strong>Overview:</strong> The ISC DHCP server combined with tftpd-hpa provides a robust and scalable PXE boot solution suitable for larger environments requiring advanced DHCP features.
+                </p>
+                <ul>
+                    <li>Highly configurable DHCP server.</li>
+                    <li>Separate TFTP server for greater flexibility.</li>
+                    <li>Supports complex network configurations.</li>
+                    <li>Ideal for enterprise environments.</li>
+                </ul>
+                <p>
+                    <strong>Pros:</strong> Advanced configuration options, scalable, reliable for large networks.
+                </p>
+                <p>
+                    <strong>Cons:</strong> More complex to set up, requires managing multiple services.
+                </p>
+                <a href="https://kb.isc.org/docs/isc-dhcp-manual-pages" target="_blank">Learn more about ISC DHCP</a>
+            </article>
+
+            <!-- PXELINUX -->
+            <article data-aos="fade-up" data-aos-delay="400">
+                <h3><i class="fas fa-terminal"></i> PXELINUX</h3>
+                <p>
+                    <strong>Overview:</strong> PXELINUX is part of the Syslinux project and provides a simple way to boot Linux systems over the network. It is often used in conjunction with other PXE server software.
+                </p>
+                <ul>
+                    <li>Lightweight and straightforward bootloader.</li>
+                    <li>Supports menu-driven boot selections.</li>
+                    <li>Easy integration with existing PXE setups.</li>
+                    <li>Suitable for both small and large deployments.</li>
+                </ul>
+                <p>
+                    <strong>Pros:</strong> Easy to configure boot menus, lightweight, widely supported.
+                </p>
+                <p>
+                    <strong>Cons:</strong> Limited to bootloader functionality, requires additional services for full PXE capabilities.
+                </p>
+                <a href="https://wiki.syslinux.org/wiki/index.php?title=PXELINUX" target="_blank">Learn more about PXELINUX</a>
+            </article>
+
+            <!-- FOG Project -->
+            <article data-aos="fade-up" data-aos-delay="600">
+                <h3><i class="fas fa-cloud"></i> FOG Project</h3>
+                <p>
+                    <strong>Overview:</strong> FOG is a free, open-source PXE-based computer cloning and management solution. It offers a web-based interface for managing images, tasks, and deployments across multiple machines.
+                </p>
+                <ul>
+                    <li>Comprehensive management interface.</li>
+                    <li>Supports imaging, task scheduling, and inventory management.</li>
+                    <li>Ideal for environments requiring centralized control.</li>
+                    <li>Extensible with plugins and scripts.</li>
+                </ul>
+                <p>
+                    <strong>Pros:</strong> Feature-rich, centralized management, active community support.
+                </p>
+                <p>
+                    <strong>Cons:</strong> Heavier footprint, may be overkill for simple PXE booting needs.
+                </p>
+                <a href="https://fogproject.org/" target="_blank">Learn more about FOG Project</a>
+            </article>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section id="troubleshooting" data-aos="fade-left">
+            <h2>Troubleshooting</h2>
+            <p>Encountering issues during the PXE boot setup is common. Here are some common problems and their solutions:</p>
+
+            <!-- Common Issue 1 -->
+            <article data-aos="fade-up">
+                <h3><i class="fas fa-exclamation-triangle"></i> DHCP Server Not Assigning IP Addresses</h3>
+                <p>
+                    <strong>Symptoms:</strong> Clients fail to obtain an IP address and cannot boot via PXE.
+                </p>
+                <ul>
+                    <li>Ensure the DHCP server is running and properly configured.</li>
+                    <li>Verify that there are available IP addresses in the DHCP range.</li>
+                    <li>Check for network issues or misconfigured interfaces.</li>
+                    <li>Ensure that no other DHCP servers are conflicting on the network.</li>
+                </ul>
+                <p>
+                    <strong>Solution:</strong> Restart the DHCP service and monitor the logs for errors. Use <code>sudo systemctl restart dnsmasq</code> (for dnsmasq) or the appropriate command for your DHCP server.
+                </p>
+            </article>
+
+            <!-- Common Issue 2 -->
+            <article data-aos="fade-up" data-aos-delay="200">
+                <h3><i class="fas fa-ban"></i> TFTP Server Not Serving Boot Files</h3>
+                <p>
+                    <strong>Symptoms:</strong> Clients receive an error related to TFTP transfer failure.
+                </p>
+                <ul>
+                    <li>Verify that the TFTP server is running.</li>
+                    <li>Ensure that the boot files are correctly placed in the TFTP root directory.</li>
+                    <li>Check file permissions to make sure they are readable by the TFTP service.</li>
+                    <li>Confirm that firewall settings allow TFTP traffic (UDP port 69).</li>
+                </ul>
+                <p>
+                    <strong>Solution:</strong> Restart the TFTP service and review the server logs for detailed error messages. Example for dnsmasq:
+                    <pre><code>
+sudo systemctl restart dnsmasq
+sudo journalctl -u dnsmasq
+                    </code></pre>
+                </p>
+            </article>
+
+            <!-- Common Issue 3 -->
+            <article data-aos="fade-up" data-aos-delay="400">
+                <h3><i class="fas fa-desktop"></i> Client Stuck at Boot Screen</h3>
+                <p>
+                    <strong>Symptoms:</strong> Clients initiate PXE boot but do not proceed beyond the initial boot screen.
+                </p>
+                <ul>
+                    <li>Ensure that the bootloader configuration points to the correct kernel and initrd images.</li>
+                    <li>Verify the integrity of the boot files.</li>
+                    <li>Check network stability and bandwidth.</li>
+                    <li>Review client BIOS/UEFI settings for compatibility.</li>
+                </ul>
+                <p>
+                    <strong>Solution:</strong> Double-check the bootloader configuration files (e.g., <code>pxelinux.cfg/default</code>) to ensure correct paths. Test with a different client to rule out hardware-specific issues.
+                </p>
+            </article>
+        </section>
+
+        <!-- Conclusion -->
+        <section id="conclusion" data-aos="fade-left">
+            <h2>Conclusion</h2>
+            <p>
+                Setting up a TinyCore Linux PXE boot environment with auto-launching Chromium provides a streamlined and efficient solution for deploying web-centric applications across multiple machines. By leveraging PXE booting, you minimize the need for physical media, simplify maintenance, and ensure consistency across deployments.
+            </p>
+            <p>
+                This guide has covered the essential steps to prepare your environment, install required components, configure auto-start scripts, and set up a PXE server using various software options. Additionally, troubleshooting common issues ensures a smoother setup process.
+            </p>
+            <p>
+                Whether you're deploying kiosks, digital signage, or dedicated browsing stations, TinyCore Linux offers the flexibility and performance needed for modern networked environments.
+            </p>
+            <p>
+                For further enhancements, consider integrating security measures, customizing Chromium settings, or exploring additional TinyCore extensions to tailor the system to your specific needs.
+            </p>
+            <p>
+                Happy deploying!
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2024 TinyCore Linux PXE Boot Guide. All rights reserved.</p>
+        <p>Follow us on:
+            <a href="https://twitter.com/" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="https://facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://github.com/" target="_blank"><i class="fab fa-github"></i></a>
+        </p>
+    </footer>
+
+    <!-- AOS JS for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
+</body>
+
+</html>
