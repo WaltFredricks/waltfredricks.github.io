@@ -29,6 +29,31 @@
             margin: 0 auto;
         }
 
+        /* Featured Section Styles */
+        .featured-section {
+            background: rgba(31, 41, 55, 0.95);
+            padding: 40px 20px;
+            text-align: center;
+            color: #d1d5db;
+        }
+
+        .featured-section h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #3b82f6;
+            text-transform: uppercase;
+            border-bottom: 2px solid #3b82f6;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .featured-section p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
         /* Main Section Styles */
         main {
             position: relative;
@@ -167,6 +192,18 @@
 
             .tile {
                 padding: 20px;
+            }
+
+            .featured-section {
+                padding: 20px 10px;
+            }
+
+            .featured-section h2 {
+                font-size: 1.5em;
+            }
+
+            .featured-section p {
+                font-size: 1em;
             }
         }
     </style>
@@ -318,7 +355,7 @@
                 `;
             }
 
-            function nextStep(stepIndex) {
+            window.nextStep = function(stepIndex) { // Make nextStep accessible globally
                 const answer = document.querySelector('input[name="answer"]:checked');
                 if (!answer) {
                     alert('Please select an answer!');
@@ -326,7 +363,7 @@
                 }
 
                 // Store the answer for this step
-                answers[`step${stepIndex}`] = answer.value;
+                answers[`step${stepIndex + 1}`] = answer.value;
 
                 if (stepIndex + 1 < steps.length) {
                     displayQuestion(stepIndex + 1);
@@ -390,6 +427,15 @@
     <header>
         <img src="https://9983.us/ipfs/bafybeicr7ydwgblrszzpdyqkf3jefgjqzxm7psbhkcufkvkvo7h7ftg6uu" alt="Octal Security Inc. Logo">
     </header>
+    
+    <!-- Featured Section Added Below Header -->
+    <section class="featured-section">
+        <h2>Our Mission & Commitment</h2>
+        <p>At Octal Security Inc., our mission is to deliver next-generation cybersecurity solutions that empower organizations to safeguard their digital infrastructure with confidence and precision. We are dedicated to staying ahead of emerging threats, ensuring that our clients are protected against the ever-evolving landscape of cyber risks.</p>
+        <p>Our commitment to unwavering excellence drives us to provide unparalleled service and innovative solutions. We believe in building lasting partnerships with our clients, offering comprehensive support and expertise to help them navigate the complexities of cybersecurity with ease and assurance.</p>
+    </section>
+    <!-- End of Featured Section -->
+
     <main>
         <div class="tile">
             <h2>User Information</h2>
@@ -428,10 +474,27 @@
             <p>Have questions? Reach out to us directly:</p>
             <p><a href="mailto:info@securedbyoctal.com">info@securedbyoctal.com</a></p>
         </div>
+        <!-- New Useful Tooling Section -->
         <div class="tile">
-    <h2>Play Zork</h2>
-    <iframe src="https://9983.us/ipfs/bafybeibqq2hzpmhhtlrw7ubcleq2bc7j4szchhanp4txf57zpkbyj424uy" width="100%" height="500px" frameborder="0" style="border-radius: 10px;"></iframe>
-</div>
+            <h2>Useful Tooling</h2>
+            <ul class="guides-list">
+                <li><a href="https://www.metasploit.com/" target="_blank" rel="noopener noreferrer">Metasploit Framework</a> - A powerful tool for developing and executing exploit code against a remote target machine.</li>
+                <li><a href="https://nmap.org/" target="_blank" rel="noopener noreferrer">Nmap</a> - A network scanning tool used to discover hosts and services on a computer network.</li>
+                <li><a href="https://www.wireshark.org/" target="_blank" rel="noopener noreferrer">Wireshark</a> - A network protocol analyzer that lets you capture and interactively browse the traffic running on a computer network.</li>
+                <li><a href="https://www.sqlmap.org/" target="_blank" rel="noopener noreferrer">sqlmap</a> - An open-source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws.</li>
+                <li><a href="https://burpSuite.com/" target="_blank" rel="noopener noreferrer">Burp Suite</a> - An integrated platform for performing security testing of web applications.</li>
+                <li><a href="https://www.owasp.org/index.php/Category:OWASP_Top_Ten_Project" target="_blank" rel="noopener noreferrer">OWASP Top Ten</a> - A standard awareness document for developers and web application security.</li>
+                <li><a href="https://www.kali.org/tools/" target="_blank" rel="noopener noreferrer">Kali Linux Tools</a> - A comprehensive collection of security tools for various information security tasks.</li>
+                <li><a href="https://www.exploit-db.com/" target="_blank" rel="noopener noreferrer">Exploit Database</a> - A repository for exploits and vulnerable software, maintained by Offensive Security.</li>
+                <li><a href="https://www.securityfocus.com/" target="_blank" rel="noopener noreferrer">SecurityFocus</a> - Provides information about security vulnerabilities and updates.</li>
+                <li><a href="https://www.offensive-security.com/" target="_blank" rel="noopener noreferrer">Offensive Security</a> - Offers training and certifications in penetration testing and ethical hacking.</li>
+            </ul>
+        </div>
+        <!-- End of Useful Tooling Section -->
+        <div class="tile">
+            <h2>Play Zork</h2>
+            <iframe src="https://9983.us/ipfs/bafybeibqq2hzpmhhtlrw7ubcleq2bc7j4szchhanp4txf57zpkbyj424uy" width="100%" height="500px" frameborder="0" style="border-radius: 10px;"></iframe>
+        </div>
     </main>
     <footer>© 2024 Octal Security Inc. All Rights Reserved. Designed for Security.</footer>
 </body>
