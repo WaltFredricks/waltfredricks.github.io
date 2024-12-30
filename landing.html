@@ -255,30 +255,133 @@
             loadRSSFeeds();
         });
 
-        // Interactive Security Audit
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('audit-form').addEventListener('submit', function(event) {
-                event.preventDefault();
-                const businessType = document.getElementById('business-type').value;
-                const currentTools = document.getElementById('current-tools').value;
-                const keyConcerns = document.getElementById('key-concerns').value;
+document.addEventListener('DOMContentLoaded', () => {
+    let currentStep = 1;
+    let answers = {}; // Store user responses here
 
-                const resultsDiv = document.getElementById('audit-results');
-                resultsDiv.innerHTML = `
-                    <h3>Audit Results</h3>
-                    <p><strong>Business Type:</strong> ${businessType}</p>
-                    <p><strong>Current Security Tools:</strong> ${currentTools}</p>
-                    <p><strong>Key Concerns:</strong> ${keyConcerns}</p>
-                    <p><strong>Recommendations:</strong></p>
-                    <ul>
-                        <li>Consider upgrading your firewall configuration.</li>
-                        <li>Ensure all antivirus tools are regularly updated.</li>
-                        <li>Schedule a vulnerability scan to identify potential gaps.</li>
-                    </ul>
-                    <p><a href="contact.html">Schedule a Consultation</a></p>
-                `;
-            });
-        });
+    const steps = [
+        {
+            question: "What type of business are you?",
+            options: ["Small Business", "Enterprise", "Government", "Non-Profit"],
+            nextStep: 2
+        },
+        {
+            question: "Do you have a dedicated IT security team?",
+            options: ["Yes", "No"],
+            nextStep: 3
+        },
+        {
+            question: "Which of the following security solutions are you currently using?",
+            options: ["Firewall", "Antivirus", "Intrusion Detection", "Endpoint Protection", "None"],
+            nextStep: 4
+        },
+        {
+            question: "Are you compliant with any cybersecurity standards? (e.g., ISO 27001, SOC 2)",
+            options: ["Yes", "No", "In Progress"],
+            nextStep: 5
+        },
+        {
+            question: "How frequently do you conduct vulnerability scans?",
+            options: ["Weekly", "Monthly", "Quarterly", "Never"],
+            nextStep: 6
+        },
+        {
+            question: "Do you have multi-factor authentication enabled on all sensitive systems?",
+            options: ["Yes", "No"],
+            nextStep: 7
+        },
+        {
+            question: "What is your primary method of backing up data?",
+            options: ["Cloud Backup", "On-premise Backup", "No Backup"],
+            nextStep: 8
+        }
+    ];
+
+    function displayQuestion(stepIndex) {
+        const step = steps[stepIndex];
+        const container = document.getElementById('discovery-tool');
+
+        container.innerHTML = `
+            <h3>${step.question}</h3>
+            <ul>
+                ${step.options.map((option, index) => `
+                    <li>
+                        <input type="radio" name="answer" value="${option}" id="option-${index}" required> 
+                        <label for="option-${index}">${option}</label>
+                    </li>
+                `).join('')}
+            </ul>
+            <button onclick="nextStep(${stepIndex})">Next</button>
+        `;
+    }
+
+    function nextStep(stepIndex) {
+        const answer = document.querySelector('input[name="answer"]:checked');
+        if (!answer) {
+            alert('Please select an answer!');
+            return;
+        }
+
+        // Store the answer for this step
+        answers[`step${stepIndex}`] = answer.value;
+
+        if (stepIndex + 1 < steps.length) {
+            displayQuestion(stepIndex + 1);
+        } else {
+            displayResults();
+        }
+    }
+
+    function displayResults() {
+        const container = document.getElementById('discovery-tool');
+        const results = [];
+
+        // Analyze the answers and provide specific recommendations
+        if (answers.step1 === "Small Business") {
+            results.push("<li>As a small business, you may have limited resources, so prioritize your most critical systems first.</li>");
+        } else if (answers.step1 === "Enterprise") {
+            results.push("<li>As an enterprise, ensure you're implementing centralized logging, threat hunting, and employee security training.</li>");
+        }
+
+        if (answers.step2 === "No") {
+            results.push("<li>It is recommended to invest in a dedicated IT security team to better handle risks and threats.</li>");
+        }
+
+        if (answers.step3.includes("None")) {
+            results.push("<li>You should implement basic security tools like a firewall and antivirus software as a starting point.</li>");
+        }
+
+        if (answers.step4 === "No") {
+            results.push("<li>Consider getting certified with a recognized standard like ISO 27001 or SOC 2 to improve your cybersecurity posture.</li>");
+        } else if (answers.step4 === "In Progress") {
+            results.push("<li>Keep up the good work! Stay on track with your compliance efforts and ensure all necessary controls are in place.</li>");
+        }
+
+        if (answers.step5 === "Never") {
+            results.push("<li>Vulnerability scans are critical! You should implement regular scans to identify and fix vulnerabilities.</li>");
+        }
+
+        if (answers.step6 === "No") {
+            results.push("<li>Enabling multi-factor authentication (MFA) on sensitive systems is a must to protect your environment from unauthorized access.</li>");
+        }
+
+        if (answers.step7 === "No Backup") {
+            results.push("<li>Ensure you have a solid backup strategy in place. Cloud backups or on-premise backups are both good options for protecting your critical data.</li>");
+        }
+
+        container.innerHTML = `
+            <h3>Discovery Completed</h3>
+            <p>Your answers indicate the following areas for improvement:</p>
+            <ul>
+                ${results.join('')}
+            </ul>
+            <p><a href="contact.html">Contact us for a more detailed assessment</a></p>
+        `;
+    }
+
+    displayQuestion(0);
+});
+
     </script>
 </head>
 <body>
@@ -307,6 +410,10 @@
             </ul>
         </div>
         <div class="tile">
+            <h2>Virtual Security Discovery Tool</h2>
+            <div id="discovery-tool"></div>
+        </div>
+        <div class="tile">
             <h2>Octal's Mission</h2>
             <p>Our mission is to deliver next-generation cybersecurity solutions that empower organizations to safeguard their digital infrastructure with confidence and precision.</p>
         </div>
@@ -318,40 +425,6 @@
             <h2>Contact Us</h2>
             <p>Have questions? Reach out to us directly:</p>
             <p><a href="mailto:info@securedbyoctal.com">info@securedbyoctal.com</a></p>
-        </div>
-        <div class="tile">
-            <h2>Interactive Security Audit</h2>
-            <form id="audit-form">
-                <label for="business-type">Type of Business:</label>
-                <select id="business-type" required>
-                    <option value="small-business">Small Business</option>
-                    <option value="enterprise">Enterprise</option>
-                    <option value="government">Government</option>
-                </select>
-                
-                <label for="current-tools">Current Security Tools:</label>
-                <input type="text" id="current-tools" placeholder="E.g., firewall, antivirus" required>
-                
-                <label for="key-concerns">Key Concerns:</label>
-                <textarea id="key-concerns" placeholder="Describe your security concerns" required></textarea>
-                
-                <button type="submit">Get Audit Results</button>
-            </form>
-            
-            <div id="audit-results" class="results">
-                <!-- Results will be displayed here -->
-            </div>
-        </div>
-        <div class="tile">
-            <h2>Industry Insights & Reports</h2>
-            <p>Stay informed about the latest trends in cybersecurity with our reports and insights.</p>
-            <ul>
-                <li><a href="report1.pdf" download>2024 Cybersecurity Trends Report</a> - A comprehensive look at the biggest cybersecurity threats of 2024.</li>
-                <li><a href="report2.pdf" download>Vulnerability Management Best Practices</a> - Key practices to manage vulnerabilities in your organization.</li>
-                <li><a href="report3.pdf" download>Next-Gen Threat Detection Solutions</a> - Innovative technologies for detecting advanced cyber threats.</li>
-            </ul>
-            
-            <p>Want to receive the latest reports directly to your inbox? <a href="subscribe.html">Subscribe Now</a></p>
         </div>
     </main>
     <footer>© 2024 Octal Security Inc. All Rights Reserved. Designed for Security.</footer>
