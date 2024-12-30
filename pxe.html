@@ -146,6 +146,7 @@
             <a href="#step-2"><i class="fas fa-cogs"></i> Install Components</a>
             <a href="#step-3"><i class="fas fa-rocket"></i> Configure Auto-start</a>
             <a href="#step-4"><i class="fas fa-network-wired"></i> Configure PXE Boot</a>
+            <a href="#step-5"><i class="fas fa-integration"></i> Integrate VM</a>
             <a href="#pxe-servers"><i class="fas fa-network-alt"></i> PXE Server Options</a>
             <a href="#troubleshooting"><i class="fas fa-tools"></i> Troubleshooting</a>
             <a href="#conclusion"><i class="fas fa-check-circle"></i> Conclusion</a>
@@ -299,6 +300,126 @@ sudo systemctl enable dnsmasq
                 This setup configures <strong>dnsmasq</strong> as both a DHCP and TFTP server, enabling PXE booting for client machines within the specified IP range. Ensure that the network interface (<code>eth0</code> in this example) matches your server's configuration.
             </p>
         </section>
+<!-- Step 5: Integrate Your Customized VM into PXE Boot -->
+<section id="step-5" data-aos="fade-left">
+    <h2>Step 5: Integrate Your Customized VM into PXE Boot</h2>
+    <p>
+        After customizing your TinyCore Linux environment within a virtual machine, the next step is to prepare and integrate this customized setup into your PXE boot infrastructure. This ensures that all client machines boot with the exact configuration and applications you’ve tailored, such as Chromium auto-launching to your specified website.
+    </p>
+    
+    <ol>
+        <li>
+            <strong>Finalize Customizations in the VM:</strong>
+            <p>
+                Ensure that all desired configurations, installed packages, and settings are correctly applied within your TinyCore Linux VM. This includes auto-start scripts, network configurations, and any additional extensions or applications.
+            </p>
+        </li>
+        
+        <li>
+            <strong>Export the Customized VM Configuration:</strong>
+            <p>
+                Depending on your virtualization platform (e.g., VirtualBox, VMware), export the VM’s filesystem and configurations. The goal is to extract the bootable components that PXE will serve to client machines.
+            </p>
+            <p>
+                <strong>For VirtualBox:</strong>
+                <pre><code>
+// Export VM as an OVF Package
+VBoxManage export "Your_VM_Name" --output /path/to/exported_vm.ovf
+                </code></pre>
+                <p>
+                    Alternatively, you can clone the VM's disk image for further processing.
+                </p>
+            </p>
+        </li>
+        
+        <li>
+            <strong>Create a Bootable Image from the VM:</strong>
+            <p>
+                To use the customized environment with PXE, you need to create a bootable image (such as an ISO or an initramfs) that includes all your configurations and applications.
+            </p>
+            <p>
+                <strong>Using TinyCore Tools:</strong>
+                <ol>
+                    <li>
+                        <strong>Generate a Compressed Filesystem:</strong>
+                        <pre><code>
+# Inside the VM, navigate to the TinyCore root directory
+cd /path/to/tinycore/root
+
+# Create a tarball of the customized filesystem
+tar -czvf custom-rootfs.tar.gz *
+                        </code></pre>
+                    </li>
+                    <li>
+                        <strong>Create a Bootable Initramfs:</strong>
+                        <pre><code>
+# Use the TinyCore tools to create a custom initramfs
+mkinitramfs -o custom-initramfs.gz -r /path/to/custom-rootfs.tar.gz
+                        </code></pre>
+                    </li>
+                </ol>
+            </p>
+        </li>
+        
+        <li>
+            <strong>Transfer Boot Files to PXE Server:</strong>
+            <p>
+                Copy the newly created bootable image files to your PXE server’s TFTP root directory. This typically includes the kernel and the initramfs.
+            </p>
+            <pre><code>
+# Example paths
+sudo cp /path/to/custom-initramfs.gz /srv/tftp/
+sudo cp /path/to/vmlinuz /srv/tftp/
+            </code></pre>
+        </li>
+        
+        <li>
+            <strong>Configure the PXE Bootloader to Use Custom Files:</strong>
+            <p>
+                Edit your PXE bootloader configuration (e.g., <code>pxelinux.cfg/default</code>) to point to the custom kernel and initramfs you’ve prepared.
+            </p>
+            <pre><code>
+DEFAULT custom
+LABEL custom
+    KERNEL vmlinuz
+    APPEND initrd=custom-initramfs.gz boot=casper
+            </code></pre>
+            <p>
+                Ensure that the paths and filenames match those of the files you copied to the TFTP root directory.
+            </p>
+        </li>
+        
+        <li>
+            <strong>Restart PXE Services:</strong>
+            <p>
+                After updating the bootloader configuration, restart your PXE server services to apply the changes.
+            </p>
+            <pre><code>
+# For dnsmasq
+sudo systemctl restart dnsmasq
+            </code></pre>
+        </li>
+    </ol>
+    
+    <p>
+        <strong>Additional Tips:</strong>
+    </p>
+    <ul>
+        <li>
+            <strong>Testing:</strong> Before deploying to all client machines, test the PXE boot with a single client to ensure that the customizations are applied correctly and that Chromium launches as expected.
+        </li>
+        <li>
+            <strong>Version Control:</strong> Keep track of changes to your customized VM and boot files. This makes it easier to update and troubleshoot your PXE boot environment.
+        </li>
+        <li>
+            <strong>Automate the Process:</strong> Consider scripting the export and image creation steps to streamline future updates and deployments.
+        </li>
+    </ul>
+    
+    <p>
+        By following these steps, you can effectively integrate your customized TinyCore Linux VM into your PXE boot setup, ensuring a consistent and automated environment across all client machines.
+    </p>
+</section>
 
         <!-- PXE Server Options -->
         <section id="pxe-servers" data-aos="fade-left">
