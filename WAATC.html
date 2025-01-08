@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Toy Company Terminal</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        #terminal {
+            white-space: pre-wrap;
+            font-size: 16px;
+        }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            background-color: #00FF00;
+            animation: blink 1s step-start infinite;
+        }
+        @keyframes blink {
+            50% { background-color: transparent; }
+        }
+        input {
+            background: none;
+            border: none;
+            color: #00FF00;
+            outline: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+        }
+        span {
+            color: #00FF00;
+        }
+    </style>
+</head>
+<body>
+    <div id="terminal">
+        <div>Welcome to <strong>ToyCo Terminal</strong></div>
+        <div>Initializing system...</div>
+        <div>Loading toys catalog...</div>
+        <div>Ready.</div>
+        <div class="cursor">&nbsp;</div>
+    </div>
+
+    <script>
+        // Function to append text to the terminal
+        function appendText(text) {
+            const terminal = document.getElementById('terminal');
+            const newLine = document.createElement('div');
+            newLine.textContent = text;
+            terminal.appendChild(newLine);
+            // Scroll to bottom
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        // Function to create a new input line
+        function createInput(promptText, callback) {
+            const terminal = document.getElementById('terminal');
+
+            // Remove existing cursor
+            const existingCursor = document.querySelector('.cursor');
+            if (existingCursor) {
+                existingCursor.remove();
+            }
+
+            // Create new input line
+            const inputLine = document.createElement('div');
+            inputLine.innerHTML = `<span>&gt; </span><input type="text" class="userInput" autofocus />`;
+            terminal.appendChild(inputLine);
+
+            const inputField = inputLine.querySelector('.userInput');
+
+            inputField.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    const input = this.value.trim().toLowerCase();
+                    appendText("> " + this.value);
+                    this.remove();
+
+                    callback(input);
+                }
+            });
+
+            // Optional: Add a blinking cursor at the end
+            const cursor = document.createElement('div');
+            cursor.classList.add('cursor');
+            terminal.appendChild(cursor);
+
+            // Focus on the input field
+            inputField.focus();
+        }
+
+        // Initial timeout to ask the first question
+        setTimeout(() => {
+            appendText("This is not a virus or cyber security solution.");
+            appendText("This is a toy for educational purposes only. A percentage of our toy was built by AI and Quality Checked by human eye.");
+            appendText("Would you like to play with our toy? (yes/no)");
+
+            // Remove the blinking cursor
+            const cursor = document.querySelector('.cursor');
+            if (cursor) {
+                cursor.remove();
+            }
+
+            // Add input field for user response
+            createInput('> ', function(input) {
+                if (input === 'yes') {
+                    appendText("Great! Let's explore our toys.");
+                    // Ask the next question
+                    appendText("Are you ready for the toy? (yes/no)");
+                    createInput('> ', function(secondInput) {
+                        if (secondInput === 'yes') {
+                            appendText("Enjoy your toy!!!");
+                            // Trigger the download of toy.exe
+                            const link = document.createElement('a');
+                            link.href = 'toy.exe'; // Ensure toy.exe is available at this path
+                            link.download = 'toy.exe';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        } else if (secondInput === 'no') {
+                            appendText("No problem! Maybe next time.");
+                        } else {
+                            appendText("Please enter 'yes' or 'no'.");
+                            // Re-ask the second question
+                            appendText("Are you ready for the toy? (yes/no)");
+                            createInput('> ', arguments.callee);
+                        }
+                    });
+                } else if (input === 'no') {
+                    appendText("No problem! Have a nice day.");
+                } else {
+                    appendText("Please enter 'yes' or 'no'.");
+                    // Re-ask the first question
+                    appendText("Would you like to play with our toy? (yes/no)");
+                    createInput('> ', arguments.callee);
+                }
+            });
+
+        }, 5000); // 5000 milliseconds = 5 seconds
+    </script>
+</body>
+</html>
