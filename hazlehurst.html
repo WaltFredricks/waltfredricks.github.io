@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hazlehurst Renovation Plan - August 2025</title>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+  crossorigin=""
+/>
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+  crossorigin=""
+></script>
+<style>
+  /* Reset & basic styling */
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  h1, h2, h3 {
+    margin: 0 0 0.5em 0;
+    color: #2c3e50;
+  }
+  a {
+    color: #2980b9;
+  }
+
+  /* Layout */
+  #container {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+  #map {
+    flex: 1;
+    height: 100vh;
+  }
+  #sidebar {
+    width: 440px;
+    max-width: 100%;
+    overflow-y: auto;
+    background: #f9f9f9;
+    border-left: 1px solid #ddd;
+    padding: 20px 25px;
+    box-sizing: border-box;
+  }
+
+  /* Slider */
+  #sliderContainer {
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+    text-align: center;
+    border-radius: 8px;
+  }
+  #dayLabel {
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-bottom: 6px;
+    color: #34495e;
+  }
+  #daySlider {
+    width: 100%;
+    cursor: pointer;
+  }
+
+  /* Scrollable report */
+  #reportContent {
+    max-height: 75vh;
+    overflow-y: auto;
+    font-size: 0.9em;
+    line-height: 1.5em;
+    color: #34495e;
+  }
+  #reportContent h2 {
+    margin-top: 1em;
+    border-bottom: 2px solid #2980b9;
+    padding-bottom: 3px;
+  }
+  #reportContent p, #reportContent ul {
+    margin-bottom: 1em;
+  }
+  #reportContent ul {
+    padding-left: 20px;
+  }
+  #reportContent li {
+    margin-bottom: 0.3em;
+  }
+
+  /* Gantt table active highlight */
+  td.active {
+    background-color: yellow !important;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 768px) {
+    #container {
+      flex-direction: column;
+    }
+    #map {
+      height: 50vh;
+    }
+    #sidebar {
+      width: 100%;
+      height: auto;
+      border-left: none;
+      border-top: 1px solid #ddd;
+    }
+    #reportContent {
+      max-height: none;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header style="padding:20px; background:#2980b9; color:#fff; text-align:center;">
+  <h1>Comprehensive Renovation Plan</h1>
+  <div><em>Neighborhoods in Hazlehurst, Georgia — August 11, 2025</em></div>
+  <div style="margin-top:6px; font-size: 0.9em;">Prepared by JTTF 9983, Subunit J11SF32, MARSOC</div>
+</header>
+
+<div id="container">
+  <div id="map"></div>
+  <aside id="sidebar">
+    <div id="sliderContainer">
+      <div id="dayLabel">Select Day: 1</div>
+      <input type="range" id="daySlider" min="1" max="14" value="1" />
+    </div>
+
+    <div id="reportContent">
+      
+      <h2>Executive Summary</h2>
+      <p>This updated plan refines the rapid renovation of neighborhoods in Hazlehurst, Georgia, across the railroad tracks from the community center, incorporating a military-style "combat engineering" approach with a detailed Gantt chart for a 14-day timeline. The project targets 150–200 older homes, 5–10 derelict buildings, and one abandoned factory (10,000–20,000 sq ft), with all roofs specified as metal. The area is divided into five zones for parallel operations, ensuring no crew conflicts. The workforce remains ~300–350 skilled workers, leveraging an unlimited labor pool for maximum concurrency.</p>
+
+      <h2>Zone Breakdown</h2>
+      <ul>
+        <li><strong>Zone A:</strong> North side of tracks, near Community Center (~50 homes).</li>
+        <li><strong>Zone B:</strong> Mid-neighborhood blocks behind Zone A (~50–75 homes).</li>
+        <li><strong>Zone C:</strong> Far west neighborhood near ballfields (~50–75 homes).</li>
+        <li><strong>Zone D:</strong> Derelict buildings and street-front structures (5–10 sites).</li>
+        <li><strong>Zone E:</strong> Abandoned factory and adjacent industrial lots (1 site).</li>
+      </ul>
+
+      <h2>Compressed 2-Week Timeline Strategy</h2>
+      <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%; font-size: 0.85em;" id="ganttTable">
+        <thead>
+          <tr style="background:#2980b9; color:#fff;">
+            <th>Task / Zone</th>
+            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-zone="A"><td>Zone A – Demolition/Prep</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="A"><td>Zone A – Roofing</td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="A"><td>Zone A – Painting</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="A"><td>Zone A – Landscaping</td><td></td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          
+          <tr data-zone="B"><td>Zone B – Demolition/Prep</td><td></td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="B"><td>Zone B – Roofing</td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="B"><td>Zone B – Painting</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="B"><td>Zone B – Landscaping</td><td></td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+
+          <tr data-zone="C"><td>Zone C – Demolition/Prep</td><td></td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="C"><td>Zone C – Roofing</td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="C"><td>Zone C – Painting</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="C"><td>Zone C – Landscaping</td><td></td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          
+          <tr data-zone="D"><td>Zone D – Demolition/Prep</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="D"><td>Zone D – Structural Repairs</td><td></td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="D"><td>Zone D – Electrical/Plumbing</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="D"><td>Zone D – Painting/Finishes</td><td></td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="D"><td>Zone D – Landscaping</td><td></td><td></td><td></td><td></td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="E"><td>Zone E – Factory Demo/Prep</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="E"><td>Zone E – Roof & Structure</td><td></td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="E"><td>Zone E – Electrical/Plumbing</td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="E"><td>Zone E – Painting/Finishes</td><td></td><td></td><td></td><td></td><td>X</td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr data-zone="E"><td>Zone E – Landscaping</td><td></td><td></td><td></td><td></td><td></td><td>X</td><td>X</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+      
+      <h2>Workforce Estimate by Trade</h2>
+      <table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%; font-size: 0.9em;">
+        <thead style="background:#27ae60; color:#fff;">
+          <tr>
+            <th>Trade / Role</th>
+            <th>Headcount Needed</th>
+            <th>Role Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Roofers</td><td>60–80</td><td>12–15 crews of 5–6; install metal roofs in parallel (1–2 days/home).</td></tr>
+          <tr><td>Exterior Painters</td><td>40–50</td><td>4–5 crews of 8–10; follow roofing per block.</td></tr>
+          <tr><td>General Labor / Landscaping</td><td>80–100</td><td>Yard cleanup, sod, debris; float between zones.</td></tr>
+          <tr><td>Construction Carpenters</td><td>20–25</td><td>Structural repairs for Zones D/E.</td></tr>
+          <tr><td>Masons / Concrete</td><td>10–15</td><td>Foundations, brick repairs, sidewalks.</td></tr>
+          <tr><td>Electricians</td><td>10–12</td><td>Wiring for Zones D/E; minor residential fixes.</td></tr>
+          <tr><td>Plumbers</td><td>6–8</td><td>Service restoration in Zones D/E.</td></tr>
+          <tr><td>Welders / Metal Workers</td><td>4–6</td><td>Factory structural steel, gates; assist metal roofing.</td></tr>
+          <tr><td>Project Foremen</td><td>8–10</td><td>1 per 3–4 crews; oversee scheduling/quality.</td></tr>
+          <tr><td>Logistics Runners</td><td>12–15</td><td>Haul metal roofing, paint, tools via pickups/trucks.</td></tr>
+          <tr><td>Heavy Equipment Operators</td><td>6–8</td><td>Skid steers, excavators for debris/materials.</td></tr>
+          <tr><td>Cleanup / Waste Management</td><td>15–20</td><td>Debris hauling to keep sites clear.</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Logistics and Resources</h2>
+      <h3>Materials</h3>
+      <ul>
+        <li><strong>Metal Roofing:</strong> Homes: 200 × 25 squares/home = 5,000 squares (~$1.5M total installed).</li>
+        <li>Derelicts: 10 × 25 squares = 250 squares (~$75,000).</li>
+        <li>Factory: 20,000 sq ft ÷ 100 = 200 squares (~$60,000).</li>
+        <li><strong>Total Metal Roofing:</strong> ~5,450 squares, ~$1.635M (material + labor).</li>
+        <li><strong>Paint:</strong> 200 homes × 20 gal/home = 4,000 gal (~$120,000 at $30/gal).</li>
+        <li><strong>Landscaping:</strong> Sod, shrubs, mulch for 200 homes + Zones D/E (~$200,000).</li>
+        <li><strong>Structural:</strong> Lumber, concrete, steel for Zones D/E (~$250,000).</li>
+        <li><strong>Total Materials:</strong> ~$2.1M.</li>
+      </ul>
+      
+      <h3>Other Resources</h3>
+      <ul>
+        <li><strong>Equipment:</strong> Rent 50 vehicles (excavators, lifts, trucks).</li>
+        <li><strong>Worker Support:</strong> Temporary housing, meals, PPE for 350 workers.</li>
+        <li><strong>Coordination:</strong> Project software, daily briefings.</li>
+      </ul>
+
+      <h3>Rough Cost Estimate</h3>
+      <ul>
+        <li><strong>Labor:</strong> ~$50/hr × 350 workers × 140 hrs = ~$2.45M</li>
+        <li><strong>Materials:</strong> ~$2.1M</li>
+        <li><strong>Total:</strong> ~$4.6–5.5M (excluding overhead)</li>
+      </ul>
+      
+      <h2>Potential Challenges and Mitigations</h2>
+      <ul>
+        <li><strong>Railroad Proximity:</strong> Coordinate with Norfolk Southern for safety barriers.</li>
+        <li><strong>Weather:</strong> August heat and rain; provide hydration stations and flexible indoor tasks.</li>
+        <li><strong>Community Impact:</strong> Notify residents in advance; stage work to minimize disruption.</li>
+        <li><strong>Regulatory:</strong> Secure permits and verify derelict ownership beforehand.</li>
+        <li><strong>Metal Roofing:</strong> Requires skilled roofers; pre-order materials to avoid delays.</li>
+      </ul>
+
+      <h2>Conclusion</h2>
+      <p>This plan integrates a zone-based, wave-driven approach with metal roofing and a precise Gantt chart, ensuring a 14-day completion with approximately 300–350 workers. It provides a scalable model for rapid urban renewal.</p>
+
+    </div>
+  </aside>
+</div>
+
+<script>
+  // Initialize Leaflet Map
+  var map = L.map('map').setView([31.8696, -82.5943], 14);  // Center on Hazlehurst, GA
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  // Define approximate zone polygons (based on locations: community center ~31.866, -82.595; ballfields ~31.864, -82.623; tracks ~vertical at -82.595; factory assumed east ~31.865, -82.585)
+  var zones = {
+    A: L.polygon([[31.870, -82.595], [31.870, -82.590], [31.865, -82.590], [31.865, -82.595]], {color: 'blue', fillOpacity: 0.2}).addTo(map).bindPopup('Zone A: Near Community Center'),
+    B: L.polygon([[31.865, -82.595], [31.865, -82.590], [31.860, -82.590], [31.860, -82.595]], {color: 'blue', fillOpacity: 0.2}).addTo(map).bindPopup('Zone B: Mid-neighborhood'),
+    C: L.polygon([[31.865, -82.625], [31.865, -82.620], [31.860, -82.620], [31.860, -82.625]], {color: 'blue', fillOpacity: 0.2}).addTo(map).bindPopup('Zone C: Near Ballfields'),
+    D: L.polygon([[31.870, -82.600], [31.870, -82.595], [31.865, -82.595], [31.865, -82.600]], {color: 'blue', fillOpacity: 0.2}).addTo(map).bindPopup('Zone D: Derelict Buildings'),
+    E: L.polygon([[31.865, -82.585], [31.865, -82.580], [31.860, -82.580], [31.860, -82.585]], {color: 'blue', fillOpacity: 0.2}).addTo(map).bindPopup('Zone E: Abandoned Factory')
+  };
+
+  // Slider functionality
+  var slider = document.getElementById('daySlider');
+  var dayLabel = document.getElementById('dayLabel');
+
+  slider.addEventListener('input', function() {
+    var day = parseInt(this.value);
+    dayLabel.textContent = 'Select Day: ' + day;
+
+    // Highlight Gantt table column (day columns start from index 1)
+    var table = document.getElementById('ganttTable');
+    var rows = table.rows;
+    var activeZones = new Set();
+
+    for (var i = 1; i < rows.length; i++) {  // Skip header
+      var cells = rows[i].cells;
+      for (var j = 1; j < cells.length; j++) {  // Skip task name
+        cells[j].classList.remove('active');
+      }
+      if (cells[day].textContent === 'X') {
+        cells[day].classList.add('active');
+        activeZones.add(rows[i].getAttribute('data-zone'));
+      }
+    }
+
+    // Update map zones: color active zones red
+    for (var zone in zones) {
+      if (activeZones.has(zone)) {
+        zones[zone].setStyle({color: 'red', fillColor: 'red', fillOpacity: 0.5});
+      } else {
+        zones[zone].setStyle({color: 'blue', fillColor: 'blue', fillOpacity: 0.2});
+      }
+    }
+  });
+
+  // Initial update
+  slider.dispatchEvent(new Event('input'));
+</script>
+</body>
+</html>
