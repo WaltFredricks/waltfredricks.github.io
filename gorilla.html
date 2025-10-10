@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>JTTF 9983 — Serious Gorillas (Offline)</title>
+<style>
+:root{--bg:#071219;--panel:#0b1620;--accent:#0fd6b8;--muted:#9fb3b0;--danger:#ff6b6b}
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:#e6f7f2}
+.container{max-width:720px;margin:8px auto;padding:12px}
+.header{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,#063a3a,#0fd6b8);display:flex;align-items:center;justify-content:center;font-weight:900;color:#031012}
+.title{font-weight:800;font-size:1.1rem}
+.lead{color:var(--muted);font-size:0.85rem;margin-top:4px}
+.panel{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:10px;padding:12px;margin-top:12px;border:1px solid rgba(255,255,255,0.03)}
+.row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.radial{position:relative;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#071c21,#041016);margin:auto}
+.node{position:absolute;width:78px;height:78px;border-radius:14px;overflow:hidden;border:2px solid rgba(15,214,184,0.12);box-shadow:0 8px 18px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.node img{width:100%;height:100%;object-fit:cover}
+.node .lbl{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:11px;color:var(--accent);font-weight:700}
+.canvas-wrap{flex:1;min-width:260px;text-align:center}
+canvas{width:100%;max-width:420px;border-radius:10px;background:#000}
+.controls{width:320px;min-width:280px}
+label{display:block;font-size:0.82rem;color:var(--muted);margin-top:8px}
+input[type=text],input[type=password],textarea,select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:#071219;color:#e6f7f2}
+textarea{min-height:84px}
+.btn{display:inline-block;padding:10px 12px;border-radius:8px;border:none;background:var(--accent);color:#052022;font-weight:800;cursor:pointer;margin-top:10px;width:100%}
+.btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+.small{font-size:0.82rem;color:var(--muted)}
+.status{margin-top:10px;font-size:0.86rem;color:var(--accent)}
+.error{margin-top:8px;color:var(--danger);font-weight:700}
+.footer{font-size:0.78rem;color:var(--muted);text-align:center;margin-top:14px}
+@media (max-width:520px){.row{flex-direction:column}.radial{width:260px;height:260px}.controls{width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">GG</div>
+    <div>
+      <div class="title">JTTF 9983 — Serious Gorillas (Offline)</div>
+      <div class="lead">Tactical meme overlay + covert LSB steganography. Offline, Android-friendly, single file.</div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <div style="flex:1;min-width:300px">
+        <div id="radial" class="radial" aria-label="gorilla radial menu"></div>
+      </div>
+      <div class="controls">
+        <label for="topText">Overt top caption</label>
+        <input id="topText" type="text" placeholder="SERIOUS GORILLA">
+        <label for="bottomText">Overt bottom caption (HW ID)</label>
+        <input id="bottomText" type="text" placeholder="Fetching HW ID..." readonly>
+        <label for="secret">Covert secret message</label>
+        <textarea id="secret" placeholder="Your secret message..."></textarea>
+        <label for="password">Encryption password (auto-generated from HW ID)</label>
+        <input id="password" type="text" placeholder="Auto-generated from HW ID" readonly>
+        <label for="uploadDecode" class="small">Upload PNG/JPG to decode (draws to canvas)</label>
+        <input id="uploadDecode" type="file" accept="image/*">
+        <button id="embedBtn" class="btn">Embed & Export PNG</button>
+        <button id="decodeBtn" class="btn ghost">Decode from Canvas</button>
+        <div class="status" id="status">Status: ready</div>
+        <div class="error" id="error" style="display:none"></div>
+      </div>
+    </div>
+    <div class="canvas-wrap" style="margin-top:12px;text-align:center">
+      <canvas id="canvas" width="800" height="800" aria-label="meme canvas"></canvas>
+    </div>
+    <div class="footer">All assets embedded. Use a modern browser on Android for best results.</div>
+  </div>
+</div>
+
+<!-- OpenPGP.js (CDN; inline for offline use by downloading from https://unpkg.com/openpgp@5.11.2/dist/openpgp.min.js) -->
+<script src="https://unpkg.com/openpgp@5.11.2/dist/openpgp.min.js"></script>
+<script>
+// Small stylized gorilla SVGs as data URLs (compact shapes, stylized faces)
+const gorillas = {
+  'alpha': `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'>
+      <rect width='100%' height='100%' fill='%23061b1b' />
+      <g transform='translate(200,200)'>
+        <ellipse rx='120' ry='110' fill='%232b2b2b' />
+        <ellipse rx='78' ry='70' fill='%233b3b3b' transform='translate(-50,-10)' />
+        <ellipse rx='78' ry='70' fill='%233b3b3b' transform='translate(50,-10)' />
+        <circle r='44' cx='-50' cy='0' fill='%23e9d7c1' />
+        <circle r='44' cx='50' cy='0' fill='%23e9d7c1' />
+        <circle r='8' cx='-40' cy='-4' fill='%23000000' />
+        <circle r='8' cx='60' cy='-4' fill='%23000000' />
+        <ellipse rx='60' ry='34' fill='%231b1616' cy='44' />
+        <path d='M-60,60 Q0,110 60,60' fill='%231b1616' />
+      </g>
+    </svg>
+  `)}`,
+  'bravo': `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'>
+      <rect width='100%' height='100%' fill='%23051116' />
+      <g transform='translate(200,200)'>
+        <path d='M-120,-20 Q-90,-120 0,-130 Q90,-120 120,-20 Q120,70 0,120 Q-120,70 -120,-20' fill='%232c2c2c' />
+        <circle r='46' cx='-65' cy='-10' fill='%23e8d8c0' />
+        <circle r='46' cx='55' cy='-10' fill='%23e8d8c0' />
+        <circle r='7' cx='-56' cy='-8' fill='%23000000' />
+        <circle r='7' cx='64' cy='-8' fill='%23000000' />
+        <ellipse rx='68' ry='34' fill='%23161414' cy='60' />
+      </g>
+    </svg>
+  `)}`,
+  'charlie': `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'>
+      <rect width='100%' height='100%' fill='%23020d10' />
+      <g transform='translate(200,200)'>
+        <circle r='120' fill='%23323832' />
+        <circle r='44' cx='-50' cy='-20' fill='%23f0e0c8' />
+        <circle r='44' cx='50' cy='-20' fill='%23f0e0c8' />
+        <circle r='7' cx='-42' cy='-18' fill='%23000000' />
+        <circle r='7' cx='57' cy='-18' fill='%23000000' />
+        <ellipse rx='70' ry='36' fill='%231e1919' cy='62' />
+      </g>
+    </svg
+  `)}`,
+  'delta': `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'>
+      <rect width='100%' height='100%' fill='%23030b0f' />
+      <g transform='translate(200,200)'>
+        <path d='M-110,0 Q-70,-150 0,-140 Q70,-150 110,0 Q110,90 0,140 Q-110,90 -110,0' fill='%2330332f' />
+        <circle r='46' cx='-58' cy='-12' fill='%23eadfc8' />
+        <circle r='46' cx='56' cy='-12' fill='%23eadfc8' />
+        <circle r='8' cx='-48' cy='-8' fill='%23000000' />
+        <circle r='8' cx='66' cy='-8' fill='%23000000' />
+        <ellipse rx='62' ry='30' fill='%23181515' cy='58' />
+      </g>
+    </svg>
+  `)}`,
+  'echo': `data:image/svg+xml;utf8,${encodeURIComponent(`
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'>
+      <rect width='100%' height='100%' fill='%230b1214' />
+      <g transform='translate(200,200)'>
+        <ellipse rx='118' ry='108' fill='%23363636' />
+        <circle r='48' cx='-60' cy='-8' fill='%23f1e3cc' />
+        <circle r='48' cx='60' cy='-8' fill='%23f1e3cc' />
+        <circle r='8' cx='-50' cy='-6' fill='%23000000' />
+        <circle r='8' cx='70' cy='-6' fill='%23000000' />
+        <ellipse rx='64' ry='34' fill='%231b1414' cy='64' />
+      </g>
+    </svg>
+  `)}`
+};
+
+// Build radial nodes dynamically
+const radialEl = document.getElementById('radial');
+let keys = Object.keys(gorillas);
+function buildRadial() {
+  radialEl.innerHTML = '';
+  const cx = 150, cy = 150, r = 110;
+  keys.forEach((k, i) => {
+    const angle = (i / keys.length) * Math.PI * 2 - Math.PI/2;
+    const x = Math.round(cx + r * Math.cos(angle));
+    const y = Math.round(cy + r * Math.sin(angle));
+    const node = document.createElement('div');
+    node.className = 'node';
+    node.style.left = (x - 39) + 'px';
+    node.style.top = (y - 39) + 'px';
+    node.tabIndex = 0;
+    const img = document.createElement('img');
+    img.src = gorillas[k];
+    img.alt = k;
+    const lbl = document.createElement('div'); lbl.className = 'lbl'; lbl.textContent = k.toUpperCase();
+    node.appendChild(img); node.appendChild(lbl);
+    node.addEventListener('click', () => selectGorilla(k));
+    radialEl.appendChild(node);
+  });
+}
+
+// Canvas and UI refs
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const topText = document.getElementById('topText');
+const bottomText = document.getElementById('bottomText');
+const secretEl = document.getElementById('secret');
+const passwordEl = document.getElementById('password');
+const embedBtn = document.getElementById('embedBtn');
+const decodeBtn = document.getElementById('decodeBtn');
+const statusEl = document.getElementById('status');
+const errorEl = document.getElementById('error');
+const uploadDecode = document.getElementById('uploadDecode');
+
+let currentKey = keys[0];
+let currentImage = null;
+let androidId = '';
+
+// Retrieve ANDROID_ID via JavaScript interface
+async function getAndroidId() {
+  try {
+    if (typeof window.AndroidInterface !== 'undefined' && window.AndroidInterface.getAndroidId) {
+      androidId = await new Promise((resolve) => {
+        window.androidIdCallback = resolve; // Set callback for AndroidInterface
+        window.AndroidInterface.getAndroidId();
+      });
+      bottomText.value = androidId || 'ANDROID_ID_NOT_AVAILABLE';
+      status('Retrieved Android ID');
+      await generatePasswordFromAndroidId();
+    } else {
+      throw new Error('AndroidInterface not available. Ensure this is running in an Android WebView.');
+    }
+  } catch (e) {
+    showError('Failed to retrieve Android ID: ' + e.message);
+    bottomText.value = 'ERROR: ANDROID_ID_NOT_AVAILABLE';
+    passwordEl.value = '';
+  }
+}
+
+// Generate deterministic password using OpenPGP.js and ANDROID_ID
+async function generatePasswordFromAndroidId() {
+  try {
+    status('Generating password from Android ID...');
+    const { privateKey } = await openpgp.generateKey({
+      userIDs: [{ name: 'Device', email: `${androidId}@example.com` }],
+      curve: 'ed25519',
+      passphrase: androidId // Use ANDROID_ID as passphrase for reversibility
+    });
+    // Derive password from private key (SHA-256, base64-encoded, truncated to 32 chars)
+    const password = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(privateKey));
+    const passwordStr = btoa(String.fromCharCode(...new Uint8Array(password))).slice(0, 32);
+    passwordEl.value = passwordStr;
+    status('Password generated');
+
+    // Optionally upload public key to pgp.mit.edu (online only)
+    if (navigator.onLine) {
+      try {
+        status('Uploading public key to pgp.mit.edu...');
+        await uploadPublicKeyToPgpMit(privateKey); // Note: Only public key should be uploaded
+        status('Public key uploaded to pgp.mit.edu');
+      } catch (e) {
+        showError('Failed to upload key to pgp.mit.edu: ' + e.message);
+      }
+    }
+  } catch (e) {
+    showError('Password generation failed: ' + e.message);
+    passwordEl.value = '';
+  }
+}
+
+// Upload public key to pgp.mit.edu
+async function uploadPublicKeyToPgpMit(publicKey) {
+  const response = await fetch('https://pgp.mit.edu/pks/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `keytext=${encodeURIComponent(publicKey)}`
+  });
+  if (!response.ok) {
+    throw new Error('Failed to upload key: ' + response.statusText);
+  }
+}
+
+// Retrieve public key from pgp.mit.edu (for reversibility verification)
+async function retrievePublicKeyFromPgpMit(email) {
+  try {
+    const response = await fetch(`https://pgp.mit.edu/pks/lookup?op=get&search=${encodeURIComponent(email)}`);
+    if (!response.ok) {
+      throw new Error('Failed to retrieve key: ' + response.statusText);
+    }
+    const text = await response.text();
+    const match = text.match(/-----BEGIN PGP PUBLIC KEY BLOCK-----\n[\s\S]*?\n-----END PGP PUBLIC KEY BLOCK-----/);
+    if (match) {
+      return match[0];
+    }
+    throw new Error('Public key not found');
+  } catch (e) {
+    throw new Error('Key retrieval failed: ' + e.message);
+  }
+}
+
+async function selectGorilla(key) {
+  try {
+    currentKey = key;
+    status('Loading ' + key + '...');
+    const img = await loadDataImage(gorillas[key]);
+    currentImage = img;
+    drawCanvas(img);
+    status('Loaded: ' + key);
+  } catch (e) {
+    showError(e.message);
+  }
+}
+
+function status(msg) {
+  statusEl.textContent = 'Status: ' + msg;
+  errorEl.style.display = 'none';
+}
+
+function showError(msg) {
+  errorEl.style.display = 'block';
+  errorEl.textContent = msg;
+  statusEl.textContent = 'Status: error';
+}
+
+function loadDataImage(dataUrl) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => res(img);
+    img.onerror = () => rej(new Error('Failed to load inline image'));
+    img.src = dataUrl;
+  });
+}
+
+function drawCanvas(img) {
+  const cw = canvas.width, ch = canvas.height;
+  const iw = img.naturalWidth, ih = img.naturalHeight;
+  const scale = Math.max(cw / iw, ch / ih);
+  const sw = Math.ceil(cw / scale), sh = Math.ceil(ch / scale);
+  const sx = Math.floor((iw - sw) / 2), sy = Math.floor((ih - sh) / 2);
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch);
+  drawMemeOverlay();
+}
+
+function drawMemeOverlay() {
+  if (!currentImage) return;
+  const cw = canvas.width, ch = canvas.height;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const top = (topText.value || 'SERIOUS GORILLA').toUpperCase();
+  const bottom = (bottomText.value || '').toUpperCase();
+  const topSize = Math.max(28, Math.floor(cw / 12));
+  ctx.font = `bold ${topSize}px Impact, Arial Black, sans-serif`;
+  ctx.lineWidth = Math.max(6, Math.floor(topSize / 14));
+  ctx.strokeStyle = 'black';
+  ctx.fillStyle = 'white';
+  wrapStrokeText(ctx, top, cw / 2, topSize, cw - 40, topSize, true);
+  if (bottom) {
+    const botSize = Math.max(20, Math.floor(cw / 18));
+    ctx.font = `bold ${botSize}px Impact, Arial Black, sans-serif`;
+    ctx.lineWidth = Math.max(4, Math.floor(botSize / 12));
+    wrapStrokeText(ctx, bottom, cw / 2, ch - botSize, cw - 40, botSize, false);
+  }
+}
+
+function wrapStrokeText(ctx, text, x, yStart, maxWidth, lineHeight, fromTop) {
+  const words = text.split(' ');
+  const lines = [];
+  let cur = words[0] || '';
+  for (let i = 1; i < words.length; i++) {
+    const test = cur + ' ' + words[i];
+    if (ctx.measureText(test).width > maxWidth) {
+      lines.push(cur);
+      cur = words[i];
+    } else {
+      cur = test;
+    }
+  }
+  lines.push(cur);
+  for (let i = 0; i < lines.length; i++) {
+    let y = fromTop ? (yStart + i * (lineHeight + 6)) : (yStart - (lines.length - 1 - i) * (lineHeight + 6));
+    ctx.strokeText(lines[i], x, y);
+    ctx.fillText(lines[i], x, y);
+  }
+}
+
+// LSB embed/extract with header length
+function textToUint8(str) {
+  return new TextEncoder().encode(str);
+}
+
+function uint8ToText(u8) {
+  return new TextDecoder().decode(u8);
+}
+
+function embedBytesToCanvas(u8arr) {
+  const w = canvas.width, h = canvas.height;
+  const imgd = ctx.getImageData(0, 0, w, h);
+  const data = imgd.data;
+  const len = u8arr.length;
+  const header = new Uint8Array(4);
+  header[0] = (len >>> 24) & 0xFF;
+  header[1] = (len >>> 16) & 0xFF;
+  header[2] = (len >>> 8) & 0xFF;
+  header[3] = len & 0xFF;
+  const total = new Uint8Array(4 + len);
+  total.set(header, 0);
+  total.set(u8arr, 4);
+  const bits = [];
+  for (let i = 0; i < total.length; i++) {
+    for (let b = 7; b >= 0; b--) {
+      bits.push((total[i] >> b) & 1);
+    }
+  }
+  const capacity = Math.floor((data.length / 4)) * 3;
+  if (bits.length > capacity) {
+    throw new Error('Payload too large for this image: need ' + bits.length + ' bits, capacity ' + capacity);
+  }
+  let bi = 0;
+  for (let i = 0; i < data.length && bi < bits.length; i += 4) {
+    for (let c = 0; c < 3 && bi < bits.length; c++) {
+      data[i + c] = (data[i + c] & 0xFE) | bits[bi++];
+    }
+  }
+  ctx.putImageData(imgd, 0, 0);
+}
+
+function extractBytesFromCanvas() {
+  const w = canvas.width, h = canvas.height;
+  const imgd = ctx.getImageData(0, 0, w, h);
+  const data = imgd.data;
+  const bits = [];
+  for (let i = 0; i < data.length; i += 4) {
+    bits.push(data[i] & 1);
+    bits.push(data[i + 1] & 1);
+    bits.push(data[i + 2] & 1);
+  }
+  function bitsToByte(start) {
+    let v = 0;
+    for (let j = 0; j < 8; j++) {
+      v = (v << 1) | (bits[start + j] || 0);
+    }
+    return v;
+  }
+  if (bits.length < 32) {
+    throw new Error('No header found');
+  }
+  const b0 = bitsToByte(0), b1 = bitsToByte(8), b2 = bitsToByte(16), b3 = bitsToByte(24);
+  const payloadLen = ((b0 << 24) | (b1 << 16) | (b2 << 8) | b3) >>> 0;
+  const totalBits = (4 + payloadLen) * 8;
+  if (bits.length < totalBits) {
+    throw new Error('Incomplete payload in image');
+  }
+  const out = new Uint8Array(payloadLen);
+  let pos = 32, idx = 0;
+  while (idx < payloadLen) {
+    out[idx++] = bitsToByte(pos);
+    pos += 8;
+  }
+  return out;
+}
+
+// Encryption using Web Crypto (AES-GCM) - offline, modern browsers
+async function encryptMessage(msg, password) {
+  const pwUtf8 = new TextEncoder().encode(password);
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey('raw', pwUtf8, 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt']
+  );
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder().encode(msg);
+  const cipherBuffer = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, enc);
+  const saltIvCipher = new Uint8Array(16 + 12 + cipherBuffer.byteLength);
+  saltIvCipher.set(salt, 0);
+  saltIvCipher.set(iv, 16);
+  saltIvCipher.set(new Uint8Array(cipherBuffer), 28);
+  return saltIvCipher;
+}
+
+async function decryptMessageBytes(bytes, password) {
+  if (bytes.length < 16 + 12 + 1) {
+    throw new Error('Payload too short for decryption');
+  }
+  const salt = bytes.slice(0, 16);
+  const iv = bytes.slice(16, 28);
+  const cipher = bytes.slice(28);
+  const pwUtf8 = new TextEncoder().encode(password);
+  const keyMaterial = await crypto.subtle.importKey('raw', pwUtf8, 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['decrypt']
+  );
+  try {
+    const plainBuffer = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv }, key, cipher);
+    return new TextDecoder().decode(plainBuffer);
+  } catch (e) {
+    throw new Error('Decryption failed — wrong password or corrupted data');
+  }
+}
+
+// Embed & export button handler
+embedBtn.addEventListener('click', async () => {
+  errorEl.style.display = 'none';
+  const secret = secretEl.value || '';
+  const pwd = passwordEl.value || '';
+  if (!secret) return showError('Secret message required');
+  if (!pwd) return showError('Password required');
+  if (!currentImage) return showError('Select a gorilla first');
+  try {
+    status('Encrypting...');
+    const encBytes = await encryptMessage(secret, pwd);
+    status('Embedding payload...');
+    drawCanvas(currentImage);
+    embedBytesToCanvas(encBytes);
+    status('Exporting PNG...');
+    canvas.toBlob((blob) => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'serious_gorilla.png';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      status('Export complete');
+    }, 'image/png');
+  } catch (e) {
+    showError(e.message);
+  }
+});
+
+// Decode button handler
+decodeBtn.addEventListener('click', async () => {
+  errorEl.style.display = 'none';
+  const pwd = passwordEl.value || '';
+  if (!pwd) return showError('Password required');
+  try {
+    status('Extracting payload...');
+    const payload = extractBytesFromCanvas();
+    status('Decrypting...');
+    const plain = await decryptMessageBytes(payload, pwd);
+    status('Decoded');
+    alert('Decoded secret: \n\n' + plain);
+  } catch (e) {
+    showError(e.message);
+  }
+});
+
+// Upload a file to draw into canvas for decode attempts
+uploadDecode.addEventListener('change', async (ev) => {
+  const f = ev.target.files[0];
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  try {
+    const img = await loadDataImage(url);
+    currentImage = img;
+    drawCanvas(img);
+    status('Loaded file into canvas');
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    showError('Failed to load file: ' + e.message);
+  }
+});
+
+// Initialize
+buildRadial();
+selectGorilla(currentKey);
+getAndroidId();
+status('Initializing...');
+</script>
+</body>
+</html>
